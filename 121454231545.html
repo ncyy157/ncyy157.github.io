@@ -6,6 +6,181 @@
     <link rel="icon" href="9582013.png">
   </head>
   <body>
-      拉長耳朵提高警覺神經細胞全面戒備
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 30px;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .product {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .product:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .product-content {
+      padding: 20px;
+    }
+
+    .product-content h3 {
+      margin-bottom: 10px;
+      color: #222;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e67e22;
+      margin-bottom: 15px;
+    }
+
+    .product button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    .product button:hover {
+      background: linear-gradient(135deg, #f77062, #fe5196);
+      transform: scale(1.05);
+    }
+
+    .cart {
+      max-width: 1100px;
+      margin: 60px auto 0;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 25px;
+    }
+
+    .cart h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .cart ul {
+      list-style: none;
+      margin-bottom: 15px;
+    }
+
+    .cart li {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .total {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: right;
+      color: #27ae60;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛒 我的線上商店</h1>
+
+  <div class="container">
+    <div class="product">
+      <img src="https://picsum.photos/400/300?random=1" />
+      <div class="product-content">
+        <h3>商品 A</h3>
+        <div class="price">NT$ 300</div>
+        <button onclick="addToCart('商品 A', 300)">加入購物車</button>
+      </div>
+    </div>
+
+    <div class="product">
+      <img src="https://picsum.photos/400/300?random=2" />
+      <div class="product-content">
+        <h3>商品 B</h3>
+        <div class="price">NT$ 500</div>
+        <button onclick="addToCart('商品 B', 500)">加入購物車</button>
+      </div>
+    </div>
+
+    <div class="product">
+      <img src="https://picsum.photos/400/300?random=3" />
+      <div class="product-content">
+        <h3>商品 C</h3>
+        <div class="price">NT$ 800</div>
+        <button onclick="addToCart('商品 C', 800)">加入購物車</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart">
+    <h2>🧾 購物車</h2>
+    <ul id="cartList"></ul>
+    <div class="total">總金額：NT$ <span id="total">0</span></div>
+  </div>
+
+  <script>
+    let total = 0;
+
+    function addToCart(name, price) {
+      const list = document.getElementById("cartList");
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${name}</span><span>NT$ ${price}</span>`;
+      list.appendChild(li);
+
+      total += price;
+      document.getElementById("total").textContent = total;
+    }
+  </script>
+
+</body>
+</html>
+
   </body>
 </html>
