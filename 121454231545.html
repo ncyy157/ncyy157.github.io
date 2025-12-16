@@ -24,18 +24,22 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .page {
-      display: none;
+      position: absolute;
+      top: 120px;
+      left: 0;
+      right: 0;
       padding: 30px;
       max-width: 1200px;
       margin: auto;
       opacity: 0;
       transform: translateX(30px);
+      pointer-events: none;
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
     .page.active {
-      display: block;
       opacity: 1;
       transform: translateX(0);
+      pointer-events: auto;
     }
 
     /* 商品卡 */
@@ -260,10 +264,10 @@
   }
 
   function goPage(id) {
-    document.querySelectorAll('.page').forEach(p => {
-      p.classList.remove('active');
-    });
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(p => p.classList.remove('active'));
     const next = document.getElementById(id);
+    void next.offsetWidth; // 觸發 reflow
     next.classList.add('active');
   }
 </script>
