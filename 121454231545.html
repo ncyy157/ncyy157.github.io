@@ -23,8 +23,20 @@
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    .page { display: none; padding: 30px; max-width: 1200px; margin: auto; }
-    .page.active { display: block; }
+    .page {
+      display: none;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
 
     /* 商品卡 */
     .products {
@@ -248,12 +260,13 @@
   }
 
   function goPage(id) {
-    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.page').forEach(p => {
+      p.classList.remove('active');
+    });
+    const next = document.getElementById(id);
+    next.classList.add('active');
   }
 </script>
 
 </body>
 </html>
-
-
