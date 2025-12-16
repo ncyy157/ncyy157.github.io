@@ -6,6 +6,22 @@
     <link rel="icon" href="9582013.png">
   </head>
   <body>
+    <div id="page1">
+    <h2>第 1 步：選商品</h2>
+    <button onclick="goPage(2)">下一步</button>
+</div>
+
+<div id="page2" style="display:none;">
+    <h2>第 2 步：填資料</h2>
+    <input placeholder="姓名"><br><br>
+    <button onclick="goPage(1)">上一步</button>
+    <button onclick="goPage(3)">下一步</button>
+</div>
+
+<div id="page3" style="display:none;">
+    <h2>完成 🎉</h2>
+</div>
+
   <style>
     * {
       box-sizing: border-box;
@@ -128,7 +144,7 @@
 </head>
 <body>
 
-  <h1>🛒 我的線上商店</h1>
+  <h1>✨ </h1>
 
   <div class="container">
     <div class="product">
