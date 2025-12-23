@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset = "utf-8">
-    <title>人</title>
+    <title>prototype</title>
     <link rel="icon" href="9582013.png">
   </head>
   <body>
@@ -10,15 +10,15 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>四頁式簡易購物網站</title>
+  <title>✧✴*:･ﾟ✧*:･ﾟ小垃圾購物網站*:･ﾟ✧*:･ﾟ✴✧</title>
   <style>
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       margin: 0;
-      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      background: linear-gradient(135deg, #F6F4D2, #DFEBD6);
     }
     header {
-      background: #ffffffcc;
+      background: #F8FAEF;
       padding: 20px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -49,20 +49,22 @@
       gap: 20px;
     }
     .product {
+      display: flex;
+      flex-direction: column;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.15);
       overflow: hidden;
     }
     .product img { width: 100%; height: 160px; object-fit: cover; }
-    .product-content { padding: 15px; }
+    .product-content { padding: 15px; flex: 1 0 120px; }
     .price { color: #e67e22; font-weight: bold; }
 
     button {
       border: none;
       border-radius: 20px;
       padding: 8px 14px;
-      background: linear-gradient(135deg,#667eea,#764ba2);
+      background: linear-gradient(135deg,#B2B36B,#807B60);
       color: #fff;
       cursor: pointer;
     }
@@ -101,30 +103,40 @@
 </head>
 <body>
 
+<!-- PAGE -1 標題首頁 -->
+<section class="page active" id="page-title">
+  <div class="cart" style="text-align:center; margin-top:120px">
+    <h1 style="font-size:42px">✧✴小垃圾購物網站✴✧</h1>
+    <p style="margin-top:20px">*:･ﾟ✧*:･ﾟ人切面*:･ﾟ✧*:･ﾟ</p>
+    <div class="actions" style="justify-content:center; margin-top:30px">
+      <button onclick="goPage('page-intro')">進入網站 ➜</button>
+    </div>
+  </div>
+</section>
+
 <header>
-  <h1>🛒 四頁式購物網站</h1>
   <div style="margin-top:10px">
-    <button class="secondary" onclick="goPage('page-intro')">網站介紹</button>
-    <button class="secondary" onclick="goPage('page-products')">開始購物</button>
+    <button class="secondary" onclick="goPage('page-title')">✦首頁✦</button>
+    <button class="secondary" onclick="goPage('page-intro')">✦網站介紹✦</button>
+    <button class="secondary" onclick="goPage('page-products')">✦開始購物✦</button>
   </div>
 </header>
 
 <!-- PAGE 0 介紹頁 -->
 <section class="page" id="page-intro">
-  <h2>👋 歡迎來到我們的商店</h2>
+  <h2>歡迎來到我們的商店</h2>
   <div class="cart">
-    <p>這是一個使用 <strong>HTML + CSS + JavaScript</strong> 製作的示範購物網站。</p>
+    <p>這是用 <strong>HTML + CSS + JavaScript</strong> 製作的示範購物網站，所以實際上不會收到任何個資</p>
     <ul>
-      <li>✔ 多頁式流程引導</li>
-      <li>✔ 商品詳情與規格選擇</li>
-      <li>✔ 即時購物車（數量修改 / 移除）</li>
-      <li>✔ 表單式結帳流程</li>
+      <li>✦多頁式的流程✦</li>
+      <li>✦商品詳情與規格選擇✦</li>
+      <li>✦購物車:可以改數量和移除✦</li>
+      <li>✦擬真的購物流程(=扮家家酒概念)✦</li>
     </ul>
-    <p style="margin-top:15px">本網站適合用於：</p>
+    <p style="margin-top:15px">本網站是用來：</p>
     <ul>
-      <li>📚 HTML / JS 練習</li>
-      <li>🎓 課堂作業或專題</li>
-      <li>🧪 原型設計（Prototype）</li>
+      <li>✦期末專題✦</li>
+      <li>✦網頁測試版本✦</li>
     </ul>
     <div class="actions" style="margin-top:20px">
       <div></div>
@@ -135,7 +147,7 @@
 
 <!-- PAGE 1 商品列表 + 購物車 -->
 <section class="page active" id="page-products">
-  <h2>① 選擇商品</h2>
+  <h2> 𝕀 選擇你中意的小廢物 </h2>
   <div class="layout">
     <div class="products">
       <div class="product">
@@ -154,6 +166,22 @@
           <button onclick="openDetail('商品 B',500)">查看詳情</button>
         </div>
       </div>
+      <div class="product">
+        <img src="https://picsum.photos/400/300?3">
+        <div class="product-content">
+          <h3>商品 C</h3>
+          <div class="price">NT$ 700</div>
+          <button onclick="openDetail('商品 C',700)">查看詳情</button>
+        </div>
+      </div>
+      <div class="product">
+        <img src="https://picsum.photos/400/300?4">
+        <div class="product-content">
+          <h3>商品 D</h3>
+          <div class="price">NT$ 800</div>
+          <button onclick="openDetail('商品 D',800)">查看詳情</button>
+        </div>
+      </div>
     </div>
 
     <div class="cart">
@@ -161,7 +189,7 @@
       <ul id="cartList"></ul>
       <div class="total">總金額：NT$ <span id="total">0</span></div>
       <div class="actions">
-        <div></div>
+        <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
         <button onclick="goPage('page-checkout')">結帳 ➜</button>
       </div>
     </div>
@@ -170,7 +198,7 @@
 
 <!-- PAGE 2 商品詳情 -->
 <section class="page" id="page-detail">
-  <h2>② 商品詳情</h2>
+  <h2>𝕀𝕀 商品詳情</h2>
   <div class="cart">
     <h3 id="detailName"></h3>
     <p>請選擇規格：</p>
@@ -181,6 +209,7 @@
     </select>
     <p style="margin-top:10px">價格：NT$ <span id="detailPrice"></span></p>
     <div class="actions">
+      <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
       <button class="secondary" onclick="goPage('page-products')">← 返回</button>
       <button onclick="addDetailToCart()">加入購物車</button>
     </div>
@@ -189,7 +218,7 @@
 
 <!-- PAGE 3 結帳 -->
 <section class="page" id="page-checkout">
-  <h2>③ 填寫訂單資料</h2>
+  <h2>𝕀𝕀𝕀 填寫訂單資料</h2>
   <div class="cart">
     <div class="form-group">
       <label>姓名</label>
@@ -205,6 +234,7 @@
     </div>
   </div>
   <div class="actions">
+    <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
     <button class="secondary" onclick="goPage('page-products')">← 返回</button>
     <button onclick="goPage('page-confirm')">下一步 ➜</button>
   </div>
@@ -212,9 +242,13 @@
 
 <!-- PAGE 4 完成 -->
 <section class="page" id="page-confirm">
-  <h2>④ 完成訂單</h2>
+  <h2>𝕀𝕏 完成訂單</h2>
   <div class="cart">
-    <p>🎉 感謝您的購買！</p>
+    <p>✧･ﾟ: *✧･ﾟ:* C҈̙͇͉͈͚̘̬̙̦̟͋̐̅͗̈̓̈́̑͐ͅo̵͙͉͔̗̫͈̤͍͔͕̞̣̯͊̌̎̅̔̿̆͐͛̔͌̊͗ͅn̶͓̮̳̫̞̟̭̬͉̭͒̆̅͐̂̊̐̄͗̇͊͌̂̐͗̓ͅǧ̸̞̠̲͚̜̰̰͇͆̑͆͊̄̂́̑̒̃̉̊̉ͅr̴̗͖͔̗̜͖̬̲͒̔́̈́̈́̓͐̔͌̆̓͗͗̀̅̂ͅa̸͖̗͔̣̪͔̮͉̞̾̐̀͑̓̀́́̍̈́͗̿ṯ̷͇͔͎̲͇͚̗̌͆̎́͊̾̿̏̂́ṳ̴̳̱͚͕̫̫͇͉́͂̉͑̍͛̀̾̇̓͂l̵͎̲̥̭͎̩̘̤̗͇̜̪̱̇̈̈́̊̇͑̒͂a̴̦̱͚͉̭͎̥̯̯̗͙̩̗͇͇̰̿̿͆̆̀̐̓͋͑̏̓̀t̸̰̝̲͙̗̱̝͍̖̜̘̙́͆̄̑͌̈͐́̊̋͑̽ͅi̷̳̗̜͔̜̰̲̲̜̙͎͎͒͑̏́̀̑̍́̿̆̀̒̓o̴̝̭̜̭̩̞͓̟̥̭̙͇͎̞̐̽͒̆̀́͒̊̈́͐̓̈ń̶̟̲͔̱̮̙̳̣͙̙͉̜͔̥̥̈́̏̏̍̌̈́̎̉̂̿̉̊̌s҉͉̲̱͖͖͈͙̩͇̲͈͇̪͚̩̱̿̿͋̀̄͆̈́̏͒͂͆͌͗̐̉!̵͎̪̘̝̜͇͔̘͍͈̤̬͙̰̐̔͋̋͗̏̈́͆̓̊͆̀̽ *:･ﾟ✧*:･ﾟ✧</p>
+    <div class="actions" style="margin-top:20px">
+      <div></div>
+      <button onclick="goPage('page-intro')">回到介紹頁面</button>
+    </div>
   </div>
 </section>
 
@@ -267,10 +301,12 @@
     const pages = document.querySelectorAll('.page');
     pages.forEach(p => p.classList.remove('active'));
     const next = document.getElementById(id);
-    void next.offsetWidth; // 觸發 reflow
+    void next.offsetWidth;
     next.classList.add('active');
   }
 </script>
 
 </body>
 </html>
+
+
