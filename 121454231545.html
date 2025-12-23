@@ -201,6 +201,7 @@
   <h2>𝕀𝕀 商品詳情</h2>
   <div class="cart">
     <h3 id="detailName"></h3>
+    <img id="specImage" src="">
     <p>請選擇規格：</p>
     <select id="detailSpec">
       <option value="原版">原版</option>
@@ -253,101 +254,97 @@
 </section>
 
 <script>
-  let cart = [];
-  let detailItem = {};
+let cart = [];
+let detailItem = {};
 
-  function updateCart() {
-    const list = document.getElementById('cartList');
-    list.innerHTML = '';
-    let total = 0;
-    cart.forEach((item, index) => {
-      total += item.price * item.qty;
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <span>${item.name} (${item.spec})</span>
-        <input type="number" min="1" value="${item.qty}" onchange="changeQty(${index},this.value)">
-        <span>NT$ ${item.price * item.qty}</span>
-        <button onclick="removeItem(${index})">✖</button>`;
-      list.appendChild(li);
-    });
-    document.getElementById('total').textContent = total;
-  }
-  <script>
-  let detailItem = {};
-    function goPage(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+/* 頁面切換 */
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById(id);
-  if(page){ page.classList.add('active'); }
-  }
-  
-  
-  function openDetail(name, price) {
-  detailItem = { name, price };
-  document.getElementById('detailName').textContent = name;
-  document.getElementById('detailPrice').textContent = price; // 價格只在這裡設定一次
-  updateSpecImage();
-  goPage('page-detail');
-  }
-  
-  
-  {
+  if (page) page.classList.add('active');
+}
+
+/* 開啟商品詳情 */
+function openDetail(name, price) {
   detailItem = { name, price };
   document.getElementById('detailName').textContent = name;
   document.getElementById('detailPrice').textContent = price;
+  document.getElementById('detailSpec').value = '原版';
   updateSpecImage();
   goPage('page-detail');
-  }
-  
-  
-  function updateSpecImage() {
+}
+
+/* 規格只影響圖片 */
+function updateSpecImage() {
   const spec = document.getElementById('detailSpec').value;
   const img = document.getElementById('specImage');
-  const map = {
-  '商品 A': {
-  original:'https://picsum.photos/400/300?A1',
-  large:'https://picsum.photos/400/300?A2',
-  deluxe:'https://picsum.photos/400/300?A3'
-  },
-  '商品 B': {
-  original:'https://picsum.photos/400/300?B1',
-  large:'https://picsum.photos/400/300?B2',
-  deluxe:'https://picsum.photos/400/300?B3'
-  }
+
+  const images = {
+    '商品 A': {
+      '原版': 'https://picsum.photos/400/300?A1',
+      '加大': 'https://picsum.photos/400/300?A2',
+      '豪華': 'https://picsum.photos/400/300?A3'
+    },
+    '商品 B': {
+      '原版': 'https://picsum.photos/400/300?B1',
+      '加大': 'https://picsum.photos/400/300?B2',
+      '豪華': 'https://picsum.photos/400/300?B3'
+    },
+    '商品 C': {
+      '原版': 'https://picsum.photos/400/300?C1',
+      '加大': 'https://picsum.photos/400/300?C2',
+      '豪華': 'https://picsum.photos/400/300?C3'
+    },
+    '商品 D': {
+      '原版': 'https://picsum.photos/400/300?D1',
+      '加大': 'https://picsum.photos/400/300?D2',
+      '豪華': 'https://picsum.photos/400/300?D3'
+    }
   };
-  img.src = map[detailItem.name][spec];
-  }
 
-  function openDetail(name, price) {
-    detailItem = { name, price };
-    document.getElementById('detailName').textContent = name;
-    document.getElementById('detailPrice').textContent = price;
-    goPage('page-detail');
+  if (images[detailItem.name]) {
+    img.src = images[detailItem.name][spec];
   }
+}
 
-  function addDetailToCart() {
-    const spec = document.getElementById('detailSpec').value;
-    cart.push({ ...detailItem, spec, qty: 1 });
-    updateCart();
-    goPage('page-products');
-  }
+/* 加入購物車 */
+function addDetailToCart() {
+  const spec = document.getElementById('detailSpec').value;
+  cart.push({ ...detailItem, spec, qty: 1 });
+  updateCart();
+  goPage('page-products');
+}
 
-  function changeQty(index, qty) {
-    cart[index].qty = Number(qty);
-    updateCart();
-  }
+/* 更新購物車 */
+function updateCart() {
+  const list = document.getElementById('cartList');
+  list.innerHTML = '';
+  let total = 0;
 
-  function removeItem(index) {
-    cart.splice(index, 1);
-    updateCart();
-  }
+  cart.forEach((item, index) => {
+    total += item.price * item.qty;
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${item.name} (${item.spec})</span>
+      <input type="number" min="1" value="${item.qty}" onchange="changeQty(${index},this.value)">
+      <span>NT$ ${item.price * item.qty}</span>
+      <button onclick="removeItem(${index})">✖</button>
+    `;
+    list.appendChild(li);
+  });
 
-  function goPage(id) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
-    const next = document.getElementById(id);
-    void next.offsetWidth;
-    next.classList.add('active');
-  }
+  document.getElementById('total').textContent = total;
+}
+
+function changeQty(index, qty) {
+  cart[index].qty = Number(qty);
+  updateCart();
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  updateCart();
+}
 </script>
 
 </body>
