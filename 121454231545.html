@@ -273,49 +273,49 @@
     document.getElementById('total').textContent = total;
   }
   <script>
-let detailItem = {};
-  function goPage(id) {
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-const page = document.getElementById(id);
-if(page){ page.classList.add('active'); }
-}
-
-
-function openDetail(name, price) {
-detailItem = { name, price };
-document.getElementById('detailName').textContent = name;
-document.getElementById('detailPrice').textContent = price; // 價格只在這裡設定一次
-updateSpecImage();
-goPage('page-detail');
-}
-
-
-{
-detailItem = { name, price };
-document.getElementById('detailName').textContent = name;
-document.getElementById('detailPrice').textContent = price;
-updateSpecImage();
-goPage('page-detail');
-}
-
-
-function updateSpecImage() {
-const spec = document.getElementById('detailSpec').value;
-const img = document.getElementById('specImage');
-const map = {
-'商品 A': {
-original:'https://picsum.photos/400/300?A1',
-large:'https://picsum.photos/400/300?A2',
-deluxe:'https://picsum.photos/400/300?A3'
-},
-'商品 B': {
-original:'https://picsum.photos/400/300?B1',
-large:'https://picsum.photos/400/300?B2',
-deluxe:'https://picsum.photos/400/300?B3'
-}
-};
-img.src = map[detailItem.name][spec];
-}
+  let detailItem = {};
+    function goPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const page = document.getElementById(id);
+  if(page){ page.classList.add('active'); }
+  }
+  
+  
+  function openDetail(name, price) {
+  detailItem = { name, price };
+  document.getElementById('detailName').textContent = name;
+  document.getElementById('detailPrice').textContent = price; // 價格只在這裡設定一次
+  updateSpecImage();
+  goPage('page-detail');
+  }
+  
+  
+  {
+  detailItem = { name, price };
+  document.getElementById('detailName').textContent = name;
+  document.getElementById('detailPrice').textContent = price;
+  updateSpecImage();
+  goPage('page-detail');
+  }
+  
+  
+  function updateSpecImage() {
+  const spec = document.getElementById('detailSpec').value;
+  const img = document.getElementById('specImage');
+  const map = {
+  '商品 A': {
+  original:'https://picsum.photos/400/300?A1',
+  large:'https://picsum.photos/400/300?A2',
+  deluxe:'https://picsum.photos/400/300?A3'
+  },
+  '商品 B': {
+  original:'https://picsum.photos/400/300?B1',
+  large:'https://picsum.photos/400/300?B2',
+  deluxe:'https://picsum.photos/400/300?B3'
+  }
+  };
+  img.src = map[detailItem.name][spec];
+  }
 
   function openDetail(name, price) {
     detailItem = { name, price };
