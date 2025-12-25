@@ -4,230 +4,40 @@
   <meta charset="UTF-8">
   <title>prototype</title>
   <link rel="icon" href="9582013.png">
-  <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
 
-body {
-  font-family: 'Huninn', sans-serif;
-  background: #faf8f5;
-  color: #333;
-  line-height: 1.6;
-}
 
-/* Header */
-.site-header {
-  text-align: center;
-  padding: 3rem 1rem;
-}
-.site-header.small {
-  padding: 1.5rem;
-}
-.site-header h1 {
-  font-size: 3rem;
-}
-.site-header p {
-  color: #777;
-}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-/* Section */
-.section {
-  padding: 2rem 1rem 4rem;
-}
-.section-title {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 2rem;
-}
-
-/* Gallery */
-.gallery {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  max-width: 1100px;
-  margin: auto;
-}
-
-.art-card {
-  background: #fff;
-  border-radius: 14px;
-  padding: 1rem;
-  text-decoration: none;
-  color: inherit;
-  box-shadow: 0 8px 24px rgba(0,0,0,.08);
-  transition: transform .3s, box-shadow .3s;
-}
-.art-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 36px rgba(0,0,0,.15);
-}
-
-.art-card img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-/* Artwork Page */
-.artwork-page {
-  max-width: 900px;
-  margin: auto;
-  padding: 2rem 1rem;
-  display: grid;
-  gap: 2rem;
-}
-
-.art-image {
-  width: 100%;
-  border-radius: 16px;
-}
-
-.art-info h1 {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-}
-.desc {
-  margin-top: 1rem;
-  color: #555;
-}
-
-/* Footer */
-.site-footer {
-  text-align: center;
-  padding: 2rem;
-  color: #777;
-}
-
-/* Dark Mode */
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #111;
-    color: #ddd;
-  }
-  .art-card {
-    background: #1c1c1c;
-  }
-  .desc {
-    color: #aaa;
-  }
-}
-
-    
-    <div id="artwork"></div>
-
-<script src="js/data.js"></script>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-  const work = artworks.find(a => a.id === id);
-
-  if (work) {
-    document.getElementById("artwork").innerHTML = `
-      <img src="${work.image}">
-      <h1>${work.title}</h1>
-      <p>藝術家：${work.artist}</p>
-      <p>年份：${work.year}</p>
-      <p>尺寸：${work.size}</p>
-      <p>媒材：${work.medium}</p>
-      <p class="desc">${work.description}</p>
-    `;
-  }
-</script>
-      
-
-    const gallery = document.getElementById("gallery");
-
-artworks.forEach(work => {
-  const card = document.createElement("a");
-  card.href = `artwork.html?id=${work.id}`;
-  card.className = "art-card";
-
-  card.innerHTML = `
-    <img src="${work.image}">
-    <h3>${work.title}</h3>
-    <p>${work.artist} · ${work.year}</p>
-  `;
-
-  gallery.appendChild(card);
-});
-
-      
-
-  <!-- Google Fonts: Huninn -->
+  <!-- Huninn 字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Huninn:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="9582013.png">
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <header class="site-header">
-    <h1 class="title">Museum Edge 展覽官方網站</h1>
-    <p class="intro">探索當代藝術、體驗跨域美學</p>
-  </header>
+<header class="site-header">
+  <h1>Museum Edge</h1>
+  <p>個人專題作品 · 美術館式互動網站</p>
+</header>
 
-  <main class="content">
+<main>
+  <section class="section">
+    <h2 class="section-title">當期展覽</h2>
+    <div id="gallery" class="gallery"></div>
+  </section>
+</main>
 
-    <!-- Exhibition Section -->
-    <section id="exhibition" class="section">
-      <h2 class="section-title">當期展覽</h2>
-      <div class="gallery-grid">
-        <article class="art-card">
-          <img src="art1.jpg" alt="藝術作品 1">
-          <h3>作品標題一</h3>
-          <p>藝術家 • 簡短介紹</p>
-        </article>
-        <article class="art-card">
-          <img src="art2.jpg" alt="藝術作品 2">
-          <h3>作品標題二</h3>
-          <p>藝術家 • 簡短介紹</p>
-        </article>
-        <!-- add more cards -->
-      </div>
-    </section>
+<footer class="site-footer">
+  © 2025 個人專題作品
+</footer>
 
-    <!-- About Section -->
-    <section id="about" class="section">
-      <h2 class="section-title">關於我們</h2>
-      <p>我們是一間致力於推廣當代藝術的美術館...</p>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="section">
-      <h2 class="section-title">聯絡資訊</h2>
-      <p>Email: info@museumedge.org</p>
-    </section>
-
-  </main>
-
-  <footer class="site-footer">
-    <p>© 2025 Museum Edge. All Rights Reserved.</p>
-  </footer>
+<!-- JS 一律放這裡 -->
+<script src="data.js"></script>
+<script src="main.js"></script>
 
 
-    <div id="artwork"></div>
-
-<script src="js/data.js"></script>
-<script>
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-  const work = artworks.find(a => a.id === id);
-
-  if (work) {
-    document.getElementById("artwork").innerHTML = `
-      <img src="${work.image}">
-      <h1>${work.title}</h1>
-      <p>藝術家：${work.artist}</p>
-      <p>年份：${work.year}</p>
-      <p>尺寸：${work.size}</p>
-      <p>媒材：${work.medium}</p>
-      <p class="desc">${work.description}</p>
-    `;
-  }
-</script>
-      
 </body>
 </html>
