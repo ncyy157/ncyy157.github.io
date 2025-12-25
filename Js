@@ -1,0 +1,15 @@
+const gallery = document.getElementById("gallery");
+
+artworks.forEach(work => {
+  const card = document.createElement("a");
+  card.href = `artwork.html?id=${work.id}`;
+  card.className = "art-card";
+
+  card.innerHTML = `
+    <img src="${work.image}">
+    <h3>${work.title}</h3>
+    <p>${work.artist} · ${work.year}</p>
+  `;
+
+  gallery.appendChild(card);
+});
