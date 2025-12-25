@@ -5,342 +5,230 @@
   <title>prototype</title>
   <link rel="icon" href="9582013.png">
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #F6F4D2, #DFEBD6);
-    }
-    header {
-      background: #F8FAEF;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-    .page {
-      position: absolute;
-      top: 120px;
-      left: 0;
-      right: 0;
-      padding: 30px;
-      max-width: 1200px;
-      margin: auto;
-      opacity: 0;
-      transform: translateX(30px);
-      pointer-events: none;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
-    .page.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-    }
-
-    /* 商品卡 */
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
-      gap: 20px;
-    }
-    .product {
-      display: flex;
-      flex-direction: column;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      overflow: hidden;
-    }
-    .product img { width: 100%; height: 160px; object-fit: cover; }
-    .product-content { padding: 15px; flex: 1 0 120px; }
-    .price { color: #e67e22; font-weight: bold; }
-
-    button {
-      border: none;
-      border-radius: 20px;
-      padding: 8px 14px;
-      background: linear-gradient(135deg,#B2B36B,#807B60);
-      color: #fff;
-      cursor: pointer;
-    }
-    button.secondary { background: #ddd; color:#333; }
-
-    /* 購物車 */
-    .layout {
-      display: grid;
-      grid-template-columns: 3fr 2fr;
-      gap: 25px;
-    }
-    .cart {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-    .cart ul { list-style: none; padding: 0; }
-    .cart li {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr auto;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .cart input { width: 50px; }
-    .total { text-align: right; font-weight: bold; color: #27ae60; }
-
-    /* 表單 */
-    .form-group { margin-bottom: 15px; }
-    label { display:block; margin-bottom: 5px; }
-    input, select { width:100%; padding:8px; border-radius:8px; border:1px solid #ccc; }
-
-    .actions { display:flex; justify-content: space-between; margin-top:20px; }
-  </style>
-</head>
-<body>
-
-<!-- PAGE -1 標題首頁 -->
-<section class="page active" id="page-title">
-  <div class="cart" style="text-align:center; margin-top:120px">
-    <h1 style="font-size:42px">✧✴小垃圾購物網站✴✧</h1>
-    <p style="margin-top:20px">*:･ﾟ✧*:･ﾟ人切面*:･ﾟ✧*:･ﾟ</p>
-    <div class="actions" style="justify-content:center; margin-top:30px">
-      <button onclick="goPage('page-intro')">進入網站 ➜</button>
-    </div>
-  </div>
-</section>
-
-<header>
-  <div style="margin-top:10px">
-    <button class="secondary" onclick="goPage('page-title')">✦首頁✦</button>
-    <button class="secondary" onclick="goPage('page-intro')">✦網站介紹✦</button>
-    <button class="secondary" onclick="goPage('page-products')">✦開始購物✦</button>
-  </div>
-</header>
-
-<!-- PAGE 0 介紹頁 -->
-<section class="page" id="page-intro">
-  <h2>歡迎來到我們的商店</h2>
-  <div class="cart">
-    <p>這是用 <strong>HTML + CSS + JavaScript</strong> 製作的示範購物網站，所以實際上不會收到任何個資</p>
-    <ul>
-      <li>✦多頁式的流程✦</li>
-      <li>✦商品詳情與規格選擇✦</li>
-      <li>✦購物車:可以改數量和移除✦</li>
-      <li>✦擬真的購物流程(=扮家家酒概念)✦</li>
-    </ul>
-    <p style="margin-top:15px">本網站是用來：</p>
-    <ul>
-      <li>✦期末專題✦</li>
-      <li>✦網頁測試版本✦</li>
-    </ul>
-    <div class="actions" style="margin-top:20px">
-      <div></div>
-      <button onclick="goPage('page-products')">開始購物 ➜</button>
-    </div>
-  </div>
-</section>
-
-<!-- PAGE 1 商品列表 + 購物車 -->
-<section class="page" id="page-products">
-  <h2> 𝕀 選擇你中意的小廢物 </h2>
-  <div class="layout">
-    <div class="products">
-      <div class="product">
-        <img src="https://picsum.photos/400/300?1">
-        <div class="product-content">
-          <h3>商品 A</h3>
-          <div class="price">NT$ 300</div>
-          <button onclick="openDetail('商品 A',300)">查看詳情</button>
-        </div>
-      </div>
-      <div class="product">
-        <img src="https://picsum.photos/400/300?2">
-        <div class="product-content">
-          <h3>商品 B</h3>
-          <div class="price">NT$ 500</div>
-          <button onclick="openDetail('商品 B',500)">查看詳情</button>
-        </div>
-      </div>
-      <div class="product">
-        <img src="https://picsum.photos/400/300?3">
-        <div class="product-content">
-          <h3>商品 C</h3>
-          <div class="price">NT$ 700</div>
-          <button onclick="openDetail('商品 C',700)">查看詳情</button>
-        </div>
-      </div>
-      <div class="product">
-        <img src="https://picsum.photos/400/300?4">
-        <div class="product-content">
-          <h3>商品 D</h3>
-          <div class="price">NT$ 800</div>
-          <button onclick="openDetail('商品 D',800)">查看詳情</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="cart">
-      <h3>🧾 購物車</h3>
-      <ul id="cartList"></ul>
-      <div class="total">總金額：NT$ <span id="total">0</span></div>
-      <div class="actions">
-        <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
-        <button onclick="goPage('page-checkout')">結帳 ➜</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PAGE 2 商品詳情 -->
-<section class="page" id="page-detail">
-  <h2>𝕀𝕀 商品詳情</h2>
-  <div class="cart">
-    <h3 id="detailName"></h3>
-    <img id="specImage" src="">
-    <p>請選擇規格：</p>
-    <select id="detailSpec" onchange="updateSpecImage()">
-      <option value="原版">原版</option>
-      <option value="加大">加大</option>
-      <option value="豪華">豪華</option>
-    </select>
-    <p style="margin-top:10px">價格：NT$ <span id="detailPrice"></span></p>
-    <div class="actions">
-      <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
-      <button class="secondary" onclick="goPage('page-products')">← 返回</button>
-      <button onclick="addDetailToCart()">加入購物車</button>
-    </div>
-  </div>
-</section>
-
-<!-- PAGE 3 結帳 -->
-<section class="page" id="page-checkout">
-  <h2>𝕀𝕀𝕀 填寫訂單資料</h2>
-  <div class="cart">
-    <div class="form-group">
-      <label>姓名</label>
-      <input>
-    </div>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email">
-    </div>
-    <div class="form-group">
-      <label>配送方式</label>
-      <select><option>宅配</option><option>超商取貨</option></select>
-    </div>
-  </div>
-  <div class="actions">
-    <button class="secondary" onclick="goPage('page-intro')">回到介紹</button>
-    <button class="secondary" onclick="goPage('page-products')">← 返回</button>
-    <button onclick="goPage('page-confirm')">下一步 ➜</button>
-  </div>
-</section>
-
-<!-- PAGE 4 完成 -->
-<section class="page" id="page-confirm">
-  <h2>𝕀𝕏 完成訂單</h2>
-  <div class="cart">
-    <p>✧･ﾟ: *✧･ﾟ:* C҈̙͇͉͈͚̘̬̙̦̟͋̐̅͗̈̓̈́̑͐ͅo̵͙͉͔̗̫͈̤͍͔͕̞̣̯͊̌̎̅̔̿̆͐͛̔͌̊͗ͅn̶͓̮̳̫̞̟̭̬͉̭͒̆̅͐̂̊̐̄͗̇͊͌̂̐͗̓ͅǧ̸̞̠̲͚̜̰̰͇͆̑͆͊̄̂́̑̒̃̉̊̉ͅr̴̗͖͔̗̜͖̬̲͒̔́̈́̈́̓͐̔͌̆̓͗͗̀̅̂ͅa̸͖̗͔̣̪͔̮͉̞̾̐̀͑̓̀́́̍̈́͗̿ṯ̷͇͔͎̲͇͚̗̌͆̎́͊̾̿̏̂́ṳ̴̳̱͚͕̫̫͇͉́͂̉͑̍͛̀̾̇̓͂l̵͎̲̥̭͎̩̘̤̗͇̜̪̱̇̈̈́̊̇͑̒͂a̴̦̱͚͉̭͎̥̯̯̗͙̩̗͇͇̰̿̿͆̆̀̐̓͋͑̏̓̀t̸̰̝̲͙̗̱̝͍̖̜̘̙́͆̄̑͌̈͐́̊̋͑̽ͅi̷̳̗̜͔̜̰̲̲̜̙͎͎͒͑̏́̀̑̍́̿̆̀̒̓o̴̝̭̜̭̩̞͓̟̥̭̙͇͎̞̐̽͒̆̀́͒̊̈́͐̓̈ń̶̟̲͔̱̮̙̳̣͙̙͉̜͔̥̥̈́̏̏̍̌̈́̎̉̂̿̉̊̌s҉͉̲̱͖͖͈͙̩͇̲͈͇̪͚̩̱̿̿͋̀̄͆̈́̏͒͂͆͌͗̐̉!̵͎̪̘̝̜͇͔̘͍͈̤̬͙̰̐̔͋̋͗̏̈́͆̓̊͆̀̽ *:･ﾟ✧*:･ﾟ✧</p>
-    <div class="actions" style="margin-top:20px">
-      <div></div>
-      <button onclick="goPage('page-intro')">回到介紹頁面</button>
-    </div>
-  </div>
-</section>
-
-<script>
-let cart = [];
-let detailItem = {};
-
-/* 頁面切換 */
-function goPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const page = document.getElementById(id);
-  if (page) page.classList.add('active');
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* 開啟商品詳情 */
-function openDetail(name, price) {
-  detailItem = { name, price };
-  document.getElementById('detailName').textContent = name;
-  document.getElementById('detailPrice').textContent = price;
-  document.getElementById('detailSpec').value = '原版';
-  updateSpecImage();
-  goPage('page-detail');
+body {
+  font-family: 'Huninn', sans-serif;
+  background: #faf8f5;
+  color: #333;
+  line-height: 1.6;
 }
 
-/* 規格只影響圖片 */
-function updateSpecImage() {
-  const spec = document.getElementById('detailSpec').value;
-  const img = document.getElementById('specImage');
+/* Header */
+.site-header {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+.site-header.small {
+  padding: 1.5rem;
+}
+.site-header h1 {
+  font-size: 3rem;
+}
+.site-header p {
+  color: #777;
+}
 
-  const images = {
-    '商品 A': {
-      '原版': 'https://picsum.photos/400/300?A1',
-      '加大': 'https://picsum.photos/400/300?A2',
-      '豪華': 'https://picsum.photos/400/300?A3'
-    },
-    '商品 B': {
-      '原版': 'https://picsum.photos/400/300?B1',
-      '加大': 'https://picsum.photos/400/300?B2',
-      '豪華': 'https://picsum.photos/400/300?B3'
-    },
-    '商品 C': {
-      '原版': 'https://picsum.photos/400/300?C1',
-      '加大': 'https://picsum.photos/400/300?C2',
-      '豪華': 'https://picsum.photos/400/300?C3'
-    },
-    '商品 D': {
-      '原版': 'https://picsum.photos/400/300?D1',
-      '加大': 'https://picsum.photos/400/300?D2',
-      '豪華': 'https://picsum.photos/400/300?D3'
-    }
-  };
+/* Section */
+.section {
+  padding: 2rem 1rem 4rem;
+}
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
 
-  if (images[detailItem.name]) {
-    img.src = images[detailItem.name][spec];
+/* Gallery */
+.gallery {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  max-width: 1100px;
+  margin: auto;
+}
+
+.art-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  transition: transform .3s, box-shadow .3s;
+}
+.art-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0,0,0,.15);
+}
+
+.art-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* Artwork Page */
+.artwork-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 2rem 1rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.art-image {
+  width: 100%;
+  border-radius: 16px;
+}
+
+.art-info h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+.desc {
+  margin-top: 1rem;
+  color: #555;
+}
+
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 2rem;
+  color: #777;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #111;
+    color: #ddd;
+  }
+  .art-card {
+    background: #1c1c1c;
+  }
+  .desc {
+    color: #aaa;
   }
 }
 
-/* 加入購物車 */
-function addDetailToCart() {
-  const spec = document.getElementById('detailSpec').value;
-  cart.push({ ...detailItem, spec, qty: 1 });
-  updateCart();
-  goPage('page-products');
-}
+    
+    <div id="artwork"></div>
 
-/* 更新購物車 */
-function updateCart() {
-  const list = document.getElementById('cartList');
-  list.innerHTML = '';
-  let total = 0;
+<script src="js/data.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const work = artworks.find(a => a.id === id);
 
-  cart.forEach((item, index) => {
-    total += item.price * item.qty;
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <span>${item.name} (${item.spec})</span>
-      <input type="number" min="1" value="${item.qty}" onchange="changeQty(${index},this.value)">
-      <span>NT$ ${item.price * item.qty}</span>
-      <button onclick="removeItem(${index})">✖</button>
+  if (work) {
+    document.getElementById("artwork").innerHTML = `
+      <img src="${work.image}">
+      <h1>${work.title}</h1>
+      <p>藝術家：${work.artist}</p>
+      <p>年份：${work.year}</p>
+      <p>尺寸：${work.size}</p>
+      <p>媒材：${work.medium}</p>
+      <p class="desc">${work.description}</p>
     `;
-    list.appendChild(li);
-  });
+  }
+</script>
+      
 
-  document.getElementById('total').textContent = total;
-}
+    const gallery = document.getElementById("gallery");
 
-function changeQty(index, qty) {
-  cart[index].qty = Number(qty);
-  updateCart();
-}
+artworks.forEach(work => {
+  const card = document.createElement("a");
+  card.href = `artwork.html?id=${work.id}`;
+  card.className = "art-card";
 
-function removeItem(index) {
-  cart.splice(index, 1);
-  updateCart();
-}
+  card.innerHTML = `
+    <img src="${work.image}">
+    <h3>${work.title}</h3>
+    <p>${work.artist} · ${work.year}</p>
+  `;
+
+  gallery.appendChild(card);
+});
+
+      
+
+  <!-- Google Fonts: Huninn -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Huninn:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="title">Museum Edge 展覽官方網站</h1>
+    <p class="intro">探索當代藝術、體驗跨域美學</p>
+  </header>
+
+  <main class="content">
+
+    <!-- Exhibition Section -->
+    <section id="exhibition" class="section">
+      <h2 class="section-title">當期展覽</h2>
+      <div class="gallery-grid">
+        <article class="art-card">
+          <img src="art1.jpg" alt="藝術作品 1">
+          <h3>作品標題一</h3>
+          <p>藝術家 • 簡短介紹</p>
+        </article>
+        <article class="art-card">
+          <img src="art2.jpg" alt="藝術作品 2">
+          <h3>作品標題二</h3>
+          <p>藝術家 • 簡短介紹</p>
+        </article>
+        <!-- add more cards -->
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section">
+      <h2 class="section-title">關於我們</h2>
+      <p>我們是一間致力於推廣當代藝術的美術館...</p>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <h2 class="section-title">聯絡資訊</h2>
+      <p>Email: info@museumedge.org</p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 Museum Edge. All Rights Reserved.</p>
+  </footer>
+
+
+    <div id="artwork"></div>
+
+<script src="js/data.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const work = artworks.find(a => a.id === id);
+
+  if (work) {
+    document.getElementById("artwork").innerHTML = `
+      <img src="${work.image}">
+      <h1>${work.title}</h1>
+      <p>藝術家：${work.artist}</p>
+      <p>年份：${work.year}</p>
+      <p>尺寸：${work.size}</p>
+      <p>媒材：${work.medium}</p>
+      <p class="desc">${work.description}</p>
+    `;
+  }
 </script>
 
+      
 </body>
 </html>
-
-
