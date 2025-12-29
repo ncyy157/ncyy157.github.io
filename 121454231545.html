@@ -5,38 +5,200 @@
   <title>prototype</title>
   <link rel="icon" href="9582013.png">
 
+<style>
+body{
+  font-family:"Segoe UI",Arial,sans-serif;
+  margin:0;
+  background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
+}
+header{
+  background:#ffffffcc;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+.page{
+  position:absolute;
+  top:120px;
+  left:0;
+  right:0;
+  max-width:1000px;
+  margin:auto;
+  padding:30px;
+  opacity:0;
+  transform:translateX(30px);
+  pointer-events:none;
+  transition:.4s;
+}
+.page.active{
+  opacity:1;
+  transform:none;
+  pointer-events:auto;
+}
+.cart{
+  background:#fff;
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+/* ===== 封面頁 ===== */
+.cover{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:calc(100vh - 120px);
+}
+.cover-box{
+  text-align:center;
+  padding:70px 90px;
+  background:#ffffffdd;
+  border-radius:30px;
+}
+.cover-box h1{
+  font-size:50px;
+}
+.cover-box p{
+  font-size:18px;
+  margin:20px 0 30px;
+}
 
-  <!-- Huninn 字體 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+/* ===== 日記列表 ===== */
+select{
+  padding:6px 10px;
+  border-radius:8px;
+  margin:0 5px;
+}
+ul{ list-style:none; padding:0; }
+li{ margin:10px 0; }
 
-  <link rel="icon" href="9582013.png">
-  <link rel="stylesheet" href="style.css">
+button{
+  border:none;
+  border-radius:20px;
+  padding:8px 16px;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  color:#fff;
+  cursor:pointer;
+}
+button.secondary{
+  background:#ddd;
+  color:#333;
+}
+</style>
 </head>
 
 <body>
 
-<header class="site-header">
-  <h1>Museum Edge</h1>
-  <p>個人專題作品 · 美術館式互動網站</p>
+<!-- ===== 封面頁 ===== -->
+<section class="page active cover" id="page-title">
+  <div class="cover-box">
+    <h1>📔 我的生活日記</h1>
+    <p>記錄每天的想法與片段</p>
+    <button onclick="goPage('page-list')">開始</button>
+  </div>
+</section>
+
+<header>
+  <button class="secondary" onclick="goPage('page-title')">首頁</button>
+  <button class="secondary" onclick="goPage('page-list')">日記</button>
 </header>
 
-<main>
-  <section class="section">
-    <h2 class="section-title">當期展覽</h2>
-    <div id="gallery" class="gallery"></div>
-  </section>
-</main>
+<!-- ===== 日記列表頁 ===== -->
+<section class="page" id="page-list">
+  <div class="cart">
+    <h2>📅 日記列表</h2>
 
-<footer class="site-footer">
-  © 2025 個人專題作品
-</footer>
+    年份：
+    <select id="yearSelect" onchange="renderDiary()"></select>
 
-<!-- JS 一律放這裡 -->
-<script src="data.js"></script>
-<script src="main.js"></script>
+    月份：
+    <select id="monthSelect" onchange="renderDiary()"></select>
+
+    <ul id="diaryList"></ul>
+  </div>
+</section>
+
+<!-- ===== 單篇日記頁 ===== -->
+<section class="page" id="page-detail">
+  <div class="cart">
+    <h3 id="diaryDate"></h3>
+    <p id="diaryContent"></p>
+    <button onclick="goPage('page-list')">返回</button>
+  </div>
+</section>
+
+<script>
+/* ===== 多頁切換（保留你原本邏輯） ===== */
+function goPage(id){
+  document.querySelectorAll('.page')
+    .forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ===== 日記資料 ===== */
+const diaryData={
+  2024:{
+    12:{
+      25:"聖誕節，天氣很好。",
+      26:"完成日記網站，很開心。"
+    },
+    11:{
+      3:"下雨，在家看書。"
+    }
+  },
+  2023:{
+    5:{
+      10:"第一次開始寫日記。"
+    }
+  }
+};
+
+/* ===== 初始化年份 ===== */
+const yearSelect=document.getElementById("yearSelect");
+const monthSelect=document.getElementById("monthSelect");
+const diaryList=document.getElementById("diaryList");
+
+function init(){
+  Object.keys(diaryData).forEach(y=>{
+    yearSelect.innerHTML+=`<option value="${y}">${y}</option>`;
+  });
+  renderMonths();
+  renderDiary();
+}
+
+function renderMonths(){
+  const y=yearSelect.value;
+  monthSelect.innerHTML="";
+  Object.keys(diaryData[y]).forEach(m=>{
+    monthSelect.innerHTML+=`<option value="${m}">${m} 月</option>`;
+  });
+}
+
+function renderDiary(){
+  renderMonths();
+  const y=yearSelect.value;
+  const m=monthSelect.value;
+  diaryList.innerHTML="";
+  Object.keys(diaryData[y][m]).forEach(d=>{
+    diaryList.innerHTML+=`
+      <li>
+        <button onclick="openDiary(${y},${m},${d})">
+          ${m}/${d}
+        </button>
+      </li>`;
+  });
+}
+
+function openDiary(y,m,d){
+  document.getElementById("diaryDate").textContent=
+    `${y} / ${m} / ${d}`;
+  document.getElementById("diaryContent").textContent=
+    diaryData[y][m][d];
+  goPage("page-detail");
+}
+
+init();
+</script>
 
 
 </body>
