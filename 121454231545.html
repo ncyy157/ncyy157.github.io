@@ -44,27 +44,44 @@ main{
 .colors{display:flex;height:120px;}
 .colors div{flex:1;}
 .card p{margin:10px;font-weight:600;text-align:center;}
-.palette-full{display:flex;height:300px;border-radius:18px;overflow:hidden;margin-bottom:20px;transition:all 0.5s;}
-.palette-full div{flex:1;display:flex;align-items:flex-end;justify-content:center;padding:12px;color:white;font-weight:bold;letter-spacing:.5px;cursor:pointer;}
+.palette-full{
+  display:flex;height:300px;border-radius:18px;overflow:hidden;margin-bottom:20px;
+  transition:all 0.5s ease;
+}
+.palette-full div{
+  flex:1;display:flex;align-items:flex-end;justify-content:center;padding:12px;
+  color:white;font-weight:bold;letter-spacing:.5px;cursor:pointer;
+}
 .back{margin-bottom:20px;display:inline-block;color:#333;text-decoration:none;}
 .color-page{text-align:center;}
-.color-box{height:220px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:white;font-size:24px;font-weight:bold;margin-bottom:20px;}
-.ui-demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
-.demo-card{background:white;padding:20px;border-radius:14px;text-align:center;}
+.color-box{
+  height:220px;border-radius:20px;display:flex;align-items:center;
+  justify-content:center;color:white;font-size:24px;font-weight:bold;margin-bottom:20px;
+}
+.ui-demo{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;
+}
+.demo-card{
+  background:white;padding:20px;border-radius:14px;text-align:center;
+}
 button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:white;}
 .heart{float:right;cursor:pointer;}
-#color-info{opacity:0;transform:translateY(20px);transition:all 0.4s ease;margin-top:20px;}
+#color-info{
+  opacity:0;transform:translateY(20px);transition:all 0.4s ease;margin-top:20px;
+}
 #color-info.show{opacity:1;transform:translateY(0);}
-.page{position:absolute;width:100%;top:0;left:100%;opacity:0;transition:all 0.5s;}
+.page{
+  position:absolute;width:100%;top:0;left:100%;opacity:0;transition:all 0.5s ease;
+}
 .page.active{left:0;opacity:1;}
+.page.exit-left{left:-100%;opacity:0;}
+.page.exit-right{left:100%;opacity:0;}
 </style>
 </head>
 <body>
-
 <header>
   <h1>🎨 Nippon Colors Demo</h1>
 </header>
-
 <main id="app"></main>
 
 <script>
@@ -90,10 +107,33 @@ const palettes = [
     {hex:"#E0B8B7", img:"https://picsum.photos/seed/11/300/200"},
     {hex:"#F9F5F5", img:"https://picsum.photos/seed/12/300/200"}
   ]}
+  { id:"warm_clay", name:"Warm Clay", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
+  { id:"golden_light", name:"Golden Light", colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
+  { id:"dusty_rose", name:"Dusty Rose", colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
+  { id:"steel_blue", name:"Steel Blue", colors:["#3D5C8A","#9DBCD6","#F0F1F2","#F3B092"] },
+  { id:"soft_apricot", name:"Soft Apricot", colors:["#F9CD2C","#EDC491","#F5DFD6","#FCF8F6"] },
+  { id:"sky_mist", name:"Sky Mist", colors:["#7EB7E4","#CCD9E8","#C4AFB0","#F5F7F9"] },
+  { id:"olive_garden", name:"Olive Garden", colors:["#496128","#59751E","#9DA483","#F7EDE9"] },
+  { id:"stone_gray", name:"Stone Gray", colors:["#2F2F2F","#6B6B6B","#B6B6B6","#F2F2F2"] },
+  { id:"lavender_gray", name:"Lavender Gray", colors:["#7C717A","#A38E93","#D1BBC0","#F9F7F8"] },
+  { id:"mist_blue", name:"Mist Blue", colors:["#6FA8B8","#9FC6CF","#CFE2E6","#F2F7F8"] },
+  { id:"deep_teal", name:"Deep Teal", colors:["#0E3F44","#1F6A70","#6FB3B8","#DCEEEF"] },
+  { id:"ice_blue", name:"Ice Blue", colors:["#7EB7E4","#B9D8EC","#E4F0F7","#F7FBFD"] },
+  { id:"moss_dark", name:"Moss Dark", colors:["#1F2E23","#4A5E49","#8E9E8B","#ECEFEA"] },
+  { id:"sage_soft", name:"Sage Soft", colors:["#6E7F73","#9FB0A3","#CBD7CE","#F3F6F4"] },
+  { id:"warm_gray", name:"Warm Gray", colors:["#4E4744","#8B827C","#CFC7C3","#F7F4F2"] },
+  { id:"lavender_mute", name:"Lavender Mute", colors:["#6E6A7E","#9A96AD","#C9C6D8","#F5F4FA"] },
+  { id:"violet_dust", name:"Violet Dust", colors:["#7B5A6A","#A88597","#D2BAC6","#F8F2F5"] },
+  { id:"rose_powder", name:"Rose Powder", colors:["#A55B5E","#D39A9C","#EBC7C8","#FBF3F3"] },
+  { id:"blush_light", name:"Blush Light", colors:["#E58A8A","#F1B6B6","#F7DADA","#FDF6F6"] },
+  { id:"clay_earth", name:"Clay Earth", colors:["#5A4036","#9B7768","#D4B6AA","#F6EFEA"] },
+  { id:"moss_field", name:"Moss Field", colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
+  { id:"soft_lilac", name:"Soft Lilac", colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
 
 ];
 
 let favorites=JSON.parse(localStorage.getItem("fav")||"[]");
+let currentPage = null;
 
 // ---------------- 工具函數 ----------------
 function hexToRgb(hex){
@@ -117,6 +157,19 @@ function rgbToHsl(r,g,b){
   return {h,s,l};
 }
 
+// ---------------- 分頁顯示 ----------------
+function showPage(newPage){
+  if(currentPage){
+    currentPage.classList.remove("active");
+    currentPage.classList.add("exit-left");
+  }
+  currentPage = newPage;
+  newPage.classList.remove("exit-left","exit-right");
+  setTimeout(()=> newPage.classList.add("active"),10);
+  app.innerHTML="";
+  app.appendChild(newPage);
+}
+
 // ---------------- Router ----------------
 function router(){
   const h=location.hash || "#home";
@@ -129,7 +182,7 @@ function router(){
 // ---------------- Home ----------------
 function renderHome(){
   const div = document.createElement("div");
-  div.className = "page active";
+  div.className="page";
   div.innerHTML = `
     <h2 style="text-align:center;margin-bottom:30px;">🎨 Nippon Colors Palettes</h2>
     <div class="grid">
@@ -143,8 +196,7 @@ function renderHome(){
       `).join("")}
     </div>
   `;
-  app.innerHTML="";
-  app.appendChild(div);
+  showPage(div);
 }
 
 // ---------------- Palette Page ----------------
@@ -152,7 +204,7 @@ function renderPalette(id){
   const p = palettes.find(x=>x.id===id);
   if(!p){ location.hash="#home"; return; }
   const div = document.createElement("div");
-  div.className="page active";
+  div.className="page";
   div.innerHTML = `
     <a class="back" href="#home">← Back</a>
     <div class="palette-full">
@@ -170,8 +222,7 @@ function renderPalette(id){
     </div>
     <div id="color-info"></div>
   `;
-  app.innerHTML="";
-  app.appendChild(div);
+  showPage(div);
 }
 
 // ---------------- Color Page ----------------
@@ -180,7 +231,7 @@ function renderColor(hex){
   const {r,g,b} = hexToRgb(c);
   const {h,s,l} = rgbToHsl(r,g,b);
   const div = document.createElement("div");
-  div.className="page active";
+  div.className="page";
   div.innerHTML = `
     <a class="back" href="#home">← Back</a>
     <div class="color-page">
@@ -191,8 +242,7 @@ function renderColor(hex){
       <p><b>色環位置:</b> ${h}°</p>
     </div>
   `;
-  app.innerHTML="";
-  app.appendChild(div);
+  showPage(div);
 }
 
 // ---------------- Actions ----------------
@@ -229,6 +279,6 @@ function showColorInfo(hex,imgUrl){
 window.addEventListener("hashchange",router);
 router();
 </script>
-
+  
 </body>
 </html>
