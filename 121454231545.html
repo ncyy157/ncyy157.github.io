@@ -51,7 +51,7 @@ main{
 
 .colors{
   display:flex;
-  height:140px; /* Nipponcolors style */
+  height:140px;
   border-radius:10px;
   overflow:hidden;
 }
@@ -123,7 +123,7 @@ main{
   cursor:pointer;
 }
 
-/* ---------- Nipponcolors UI tuning ---------- */
+/* Nipponcolors UI tuning */
 .card{
   box-shadow:none;
   border-radius:0;
@@ -195,7 +195,10 @@ const baseColors = [
   { name:"Teal", hue:180 },
   { name:"Indigo", hue:220 },
   { name:"Ultramarine", hue:240 },
-  { name:"Plum", hue:280 }
+  { name:"Plum", hue:280 },
+  { name:"Rose", hue:330 },
+  { name:"Magenta", hue:300 },
+  { name:"Cyan", hue:190 }
 ];
 
 function hslToHex(h,s,l){
@@ -231,15 +234,16 @@ function rgbToHsl(r,g,b){
   return {h:Math.round(h),s:Math.round(s*100),l:Math.round(l*100)};
 }
 
-// 產生 Nipponcolors 風格色票
+// 產生多樣化 Nipponcolors 風格色票
 function generatePalette(){
   const base = baseColors[Math.floor(Math.random()*baseColors.length)];
-  const s = 45 + Math.random()*15;     
-  const steps = [88,68,48,28];         
+  const hue = base.hue + Math.random()*15 - 7.5; // ±7.5°
+  const s = 35 + Math.random()*40;   // 彩度 35~75
+  const steps = [90,70,50,30].map(l => l + (Math.random()*5-2)); // 明度 ±2
   return {
     id:"p"+Date.now(),
     name: base.name,
-    colors: steps.map(l => hslToHex(base.hue,s,l))
+    colors: steps.map(l => hslToHex(hue,s,l))
   };
 }
 
@@ -300,7 +304,7 @@ function renderPalette(id){
   <a class="back" href="#home">← Back</a>
   <div class="palette-full">
     ${p.colors.map(c=>`
-      <div style="background:${c}" onclick="goColor('${c.slice(1)}')">${c}</div>
+      <div style="background:${c}" onclick="goColor('${c}')">${c}</div>
     `).join("")}
   </div>
 
@@ -320,7 +324,7 @@ function renderPalette(id){
 
 /* ---------- Color Page ---------- */
 function renderColor(hex){
-  const c="#"+hex;
+  const c = hex.startsWith("#") ? hex : "#"+hex;
   const {r,g,b} = hexToRgb(c);
   const {h,s,l} = rgbToHsl(r,g,b);
   app.innerHTML=`
@@ -336,7 +340,7 @@ function renderColor(hex){
 
 /* ---------- Actions ---------- */
 function goPalette(id){ location.hash="#palette/"+id; }
-function goColor(hex){ location.hash="#color/"+hex; }
+function goColor(hex){ location.hash="#color/"+hex.replace("#",""); }
 
 function toggleFav(id,event){
   event.stopPropagation();
@@ -358,6 +362,7 @@ window.addEventListener("keydown",e=>{
 window.addEventListener("hashchange",router);
 router();
 </script>
+
 
 </body>
 </html>
