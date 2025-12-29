@@ -10,8 +10,8 @@ body{
   margin:0;
   font-family:"Segoe UI",system-ui,sans-serif;
   background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
+  overflow-x:hidden;
 }
-
 header{
   background:#ffffffcc;
   padding:20px;
@@ -19,23 +19,20 @@ header{
   box-shadow:0 4px 10px rgba(0,0,0,.1);
   position:sticky;
   top:0;
+  z-index:10;
 }
-
 h1{ margin:0; }
-
 main{
   max-width:1200px;
   margin:40px auto;
   padding:0 20px;
+  position:relative;
 }
-
-/* 色票牆 */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
   gap:20px;
 }
-
 .card{
   background:#fff;
   border-radius:12px;
@@ -43,94 +40,23 @@ main{
   transition:.25s;
   overflow:hidden;
 }
-
-.card:hover{
-  transform:translateY(-4px);
-}
-
-.colors{
-  display:flex;
-  height:120px;
-}
-
-.colors div{
-  flex:1;
-}
-
-.card p{
-  margin:10px;
-  font-weight:600;
-  text-align:center;
-}
-
-/* Palette 頁面 */
-.palette-full{
-  display:flex;
-  height:300px;
-  border-radius:18px;
-  overflow:hidden;
-  margin-bottom:20px;
-}
-
-.palette-full div{
-  flex:1;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:12px;
-  color:white;
-  font-weight:bold;
-  letter-spacing:.5px;
-  cursor:pointer;
-}
-
-.back{
-  margin-bottom:20px;
-  display:inline-block;
-  color:#333;
-  text-decoration:none;
-}
-
-.color-page{
-  text-align:center;
-}
-
-.color-box{
-  height:220px;
-  border-radius:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:24px;
-  font-weight:bold;
-  margin-bottom:20px;
-}
-
-.ui-demo{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;
-}
-
-.demo-card{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  text-align:center;
-}
-
-button{
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
-  cursor:pointer;
-  color:white;
-}
-.heart{
-  float:right;
-  cursor:pointer;
-}
+.card:hover{transform:translateY(-4px);}
+.colors{display:flex;height:120px;}
+.colors div{flex:1;}
+.card p{margin:10px;font-weight:600;text-align:center;}
+.palette-full{display:flex;height:300px;border-radius:18px;overflow:hidden;margin-bottom:20px;transition:all 0.5s;}
+.palette-full div{flex:1;display:flex;align-items:flex-end;justify-content:center;padding:12px;color:white;font-weight:bold;letter-spacing:.5px;cursor:pointer;}
+.back{margin-bottom:20px;display:inline-block;color:#333;text-decoration:none;}
+.color-page{text-align:center;}
+.color-box{height:220px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:white;font-size:24px;font-weight:bold;margin-bottom:20px;}
+.ui-demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+.demo-card{background:white;padding:20px;border-radius:14px;text-align:center;}
+button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:white;}
+.heart{float:right;cursor:pointer;}
+#color-info{opacity:0;transform:translateY(20px);transition:all 0.4s ease;margin-top:20px;}
+#color-info.show{opacity:1;transform:translateY(0);}
+.page{position:absolute;width:100%;top:0;left:100%;opacity:0;transition:all 0.5s;}
+.page.active{left:0;opacity:1;}
 </style>
 </head>
 <body>
@@ -144,8 +70,26 @@ button{
 <script>
 // ---------------- 核心變數 ----------------
 const app = document.getElementById("app");
-  
+
 const palettes = [
+  { id:"warm_clay", name:"Warm Clay", colors:[
+    {hex:"#EA825D", img:"https://picsum.photos/seed/1/300/200"},
+    {hex:"#EAA285", img:"https://picsum.photos/seed/2/300/200"},
+    {hex:"#F3D1C2", img:"https://picsum.photos/seed/3/300/200"},
+    {hex:"#FAF6F4", img:"https://picsum.photos/seed/4/300/200"}
+  ]},
+  { id:"golden_light", name:"Golden Light", colors:[
+    {hex:"#F3BE42", img:"https://picsum.photos/seed/5/300/200"},
+    {hex:"#F8D87D", img:"https://picsum.photos/seed/6/300/200"},
+    {hex:"#FAEABA", img:"https://picsum.photos/seed/7/300/200"},
+    {hex:"#FBFAF3", img:"https://picsum.photos/seed/8/300/200"}
+  ]},
+  { id:"dusty_rose", name:"Dusty Rose", colors:[
+    {hex:"#714745", img:"https://picsum.photos/seed/9/300/200"},
+    {hex:"#B17E81", img:"https://picsum.photos/seed/10/300/200"},
+    {hex:"#E0B8B7", img:"https://picsum.photos/seed/11/300/200"},
+    {hex:"#F9F5F5", img:"https://picsum.photos/seed/12/300/200"}
+  ]}
   { id:"warm_clay", name:"Warm Clay", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
   { id:"golden_light", name:"Golden Light", colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
   { id:"dusty_rose", name:"Dusty Rose", colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
@@ -168,6 +112,7 @@ const palettes = [
   { id:"clay_earth", name:"Clay Earth", colors:["#5A4036","#9B7768","#D4B6AA","#F6EFEA"] },
   { id:"moss_field", name:"Moss Field", colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
   { id:"soft_lilac", name:"Soft Lilac", colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
+
 ];
 
 let favorites=JSON.parse(localStorage.getItem("fav")||"[]");
@@ -177,13 +122,11 @@ function hexToRgb(hex){
   const v=parseInt(hex.slice(1),16);
   return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
 }
-
 function rgbToHsl(r,g,b){
   r/=255; g/=255; b/=255;
   const max=Math.max(r,g,b), min=Math.min(r,g,b);
   let h,s,l=(max+min)/2;
-  if(max===min){ h=s=0; }
-  else{
+  if(max===min){ h=s=0; } else{
     const d=max-min;
     s=l>0.5?d/(2-max-min):d/(max+min);
     switch(max){
@@ -207,43 +150,50 @@ function router(){
 
 // ---------------- Home ----------------
 function renderHome(){
-  app.innerHTML=`
+  const div = document.createElement("div");
+  div.className = "page active";
+  div.innerHTML = `
     <h2 style="text-align:center;margin-bottom:30px;">🎨 Nippon Colors Palettes</h2>
     <div class="grid">
       ${palettes.map(p=>`
         <div class="card">
           <div class="colors" onclick="goPalette('${p.id}')">
-            ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
+            ${p.colors.map(c=>`<div style="background:${c.hex}"></div>`).join("")}
           </div>
           <p>${p.name} <span class="heart" onclick="toggleFav('${p.id}',event)">${favorites.includes(p.id)?"❤️":"🤍"}</span></p>
         </div>
       `).join("")}
     </div>
   `;
+  app.innerHTML="";
+  app.appendChild(div);
 }
 
 // ---------------- Palette Page ----------------
 function renderPalette(id){
-  const p=palettes.find(x=>x.id===id);
+  const p = palettes.find(x=>x.id===id);
   if(!p){ location.hash="#home"; return; }
-  app.innerHTML=`
+  const div = document.createElement("div");
+  div.className="page active";
+  div.innerHTML = `
     <a class="back" href="#home">← Back</a>
     <div class="palette-full">
-      ${p.colors.map(c=>`<div style="background:${c}" onclick="goColor('${c}')">${c}</div>`).join("")}
+      ${p.colors.map(c=>`<div style="background:${c.hex}" onclick="goColor('${c.hex}')">${c.hex}</div>`).join("")}
     </div>
     <h2>UI Preview</h2>
     <div class="ui-demo">
-      <div class="demo-card">
-        <button style="background:${p.colors[0]}">Primary Button</button>
-      </div>
-      <div class="demo-card" style="border-top:6px solid ${p.colors[1]}">
-        Card Highlight
-      </div>
-      <div class="demo-card" style="background:${p.colors[2]};color:white">
-        Hero Section
-      </div>
+      ${p.colors.slice(0,3).map((c,i)=>`
+        <div class="demo-card">
+          <button style="background:${c.hex}" onclick="showColorInfo('${c.hex}','${c.img}')">
+            Button ${i+1}
+          </button>
+        </div>
+      `).join("")}
     </div>
+    <div id="color-info"></div>
   `;
+  app.innerHTML="";
+  app.appendChild(div);
 }
 
 // ---------------- Color Page ----------------
@@ -251,15 +201,20 @@ function renderColor(hex){
   const c = hex.startsWith("#") ? hex : "#"+hex;
   const {r,g,b} = hexToRgb(c);
   const {h,s,l} = rgbToHsl(r,g,b);
-  app.innerHTML=`
+  const div = document.createElement("div");
+  div.className="page active";
+  div.innerHTML = `
     <a class="back" href="#home">← Back</a>
     <div class="color-page">
       <div class="color-box" style="background:${c}">${c}</div>
-      <p><b>HEX</b> ${c}</p>
-      <p><b>RGB</b> rgb(${r}, ${g}, ${b})</p>
-      <p><b>HSL</b> hsl(${h}, ${s}%, ${l}%)</p>
+      <p><b>HEX:</b> ${c}</p>
+      <p><b>RGB:</b> rgb(${r},${g},${b})</p>
+      <p><b>HSL:</b> hsl(${h},${s}%,${l}%)</p>
+      <p><b>色環位置:</b> ${h}°</p>
     </div>
   `;
+  app.innerHTML="";
+  app.appendChild(div);
 }
 
 // ---------------- Actions ----------------
@@ -275,12 +230,27 @@ function toggleFav(id,event){
   renderHome();
 }
 
+// ---------------- 顯示色彩資訊 ----------------
+function showColorInfo(hex,imgUrl){
+  const {r,g,b} = hexToRgb(hex);
+  const {h,s,l} = rgbToHsl(r,g,b);
+  const infoHtml = `
+    <p><b>HEX:</b> ${hex}</p>
+    <p><b>RGB:</b> rgb(${r},${g},${b})</p>
+    <p><b>HSL:</b> hsl(${h},${s}%,${l}%)</p>
+    <p><b>色環位置:</b> ${h}°</p>
+    <img src="${imgUrl}" alt="Color sample" style="width:100%;max-width:300px;margin-top:10px;border-radius:12px;">
+  `;
+  const infoBox = document.getElementById("color-info");
+  if(infoBox){
+    infoBox.innerHTML = infoHtml;
+    infoBox.classList.add("show");
+  }
+}
+
 window.addEventListener("hashchange",router);
 router();
 </script>
 
 </body>
 </html>
-
-
-
