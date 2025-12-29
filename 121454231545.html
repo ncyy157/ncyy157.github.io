@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>prototype</title>
-  <link rel="icon" href="9582013.png">
+  <link rel="icon" href="9582013.png">>
 
 <style>
 body{
@@ -51,7 +51,7 @@ main{
 
 .colors{
   display:flex;
-  height:80px;
+  height:140px; /* Nipponcolors style */
   border-radius:10px;
   overflow:hidden;
 }
@@ -95,7 +95,7 @@ main{
   text-decoration:none;
 }
 
-  .intro{
+.intro{
   min-height:70vh;
   display:flex;
   flex-direction:column;
@@ -123,15 +123,10 @@ main{
   cursor:pointer;
 }
 
-  /* ---------- Nipponcolors UI tuning ---------- */
-
+/* ---------- Nipponcolors UI tuning ---------- */
 .card{
   box-shadow:none;
   border-radius:0;
-}
-
-.colors{
-  height:140px;
 }
 
 .card-footer{
@@ -140,7 +135,41 @@ main{
   opacity:.8;
 }
 
+.color-page{
+  text-align:center;
+}
 
+.color-box{
+  height:220px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:24px;
+  font-weight:bold;
+  margin-bottom:20px;
+}
+
+.ui-demo{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;
+}
+
+.demo-card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+}
+
+button{
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  color:white;
+}
 </style>
 </head>
 
@@ -153,8 +182,10 @@ main{
 <main id="app"></main>
 
 <script>
-/* ---------- Utilities ---------- */
-  /* ---------- Nippon-style Color System ---------- */
+// --------------- 核心變數 ---------------
+const app = document.getElementById("app");
+
+/* ---------- Nippon-style Color System ---------- */
 const baseColors = [
   { name:"Crimson", hue:0 },
   { name:"Vermilion", hue:15 },
@@ -177,18 +208,40 @@ function hslToHex(h,s,l){
     .join("").toUpperCase();
 }
 
+function hexToRgb(hex){
+  const v = parseInt(hex.slice(1),16);
+  return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
+}
+
+function rgbToHsl(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){ h=s=0; }
+  else{
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){
+      case r: h=(g-b)/d+(g<b?6:0); break;
+      case g: h=(b-r)/d+2; break;
+      case b: h=(r-g)/d+4; break;
+    }
+    h*=60;
+  }
+  return {h:Math.round(h),s:Math.round(s*100),l:Math.round(l*100)};
+}
+
+// 產生 Nipponcolors 風格色票
 function generatePalette(){
   const base = baseColors[Math.floor(Math.random()*baseColors.length)];
-  const s = 45 + Math.random()*15;     // 設計安全彩度
-  const steps = [88,68,48,28];         // Nipponcolors 風格明度階梯
-
+  const s = 45 + Math.random()*15;     
+  const steps = [88,68,48,28];         
   return {
     id:"p"+Date.now(),
     name: base.name,
     colors: steps.map(l => hslToHex(base.hue,s,l))
   };
 }
-
 
 /* ---------- State ---------- */
 let palettes=[
@@ -217,9 +270,7 @@ function renderIntro(){
   `;
 }
 
-function startApp(){
-  location.hash="#home";
-}
+function startApp(){ location.hash="#home"; }
 
 /* ---------- Home ---------- */
 function renderHome(){
@@ -232,7 +283,7 @@ function renderHome(){
       </div>
       <div class="card-footer">
         <b>${p.name}</b>
-        <span class="heart" onclick="toggleFav('${p.id}')">
+        <span class="heart" onclick="toggleFav('${p.id}',event)">
           ${favorites.includes(p.id)?"❤️":"🤍"}
         </span>
       </div>
@@ -270,19 +321,25 @@ function renderPalette(id){
 /* ---------- Color Page ---------- */
 function renderColor(hex){
   const c="#"+hex;
+  const {r,g,b} = hexToRgb(c);
+  const {h,s,l} = rgbToHsl(r,g,b);
   app.innerHTML=`
-  <a class="back" href="#home">← Back</a>
-  <div class="color-page">
-    <div class="color-box" style="background:${c}">${c}</div>
-    <p>Use this color as background, accent, or highlight.</p>
-  </div>`;
+    <a class="back" href="#home">← Back</a>
+    <div class="color-page">
+      <div class="color-box" style="background:${c}">${c}</div>
+      <p><b>HEX</b> ${c}</p>
+      <p><b>RGB</b> rgb(${r}, ${g}, ${b})</p>
+      <p><b>HSL</b> hsl(${h}, ${s}%, ${l}%)</p>
+    </div>
+  `;
 }
 
 /* ---------- Actions ---------- */
 function goPalette(id){ location.hash="#palette/"+id; }
 function goColor(hex){ location.hash="#color/"+hex; }
 
-function toggleFav(id){
+function toggleFav(id,event){
+  event.stopPropagation();
   favorites = favorites.includes(id)
     ? favorites.filter(x=>x!==id)
     : [...favorites,id];
@@ -298,12 +355,11 @@ window.addEventListener("keydown",e=>{
   }
 });
 
-
 window.addEventListener("hashchange",router);
 router();
 </script>
 
-
 </body>
 </html>
+
 
