@@ -29,176 +29,144 @@ header{
   transform:translateX(30px);
   pointer-events:none;
   transition:.4s;
-}
-.page.active{
-  opacity:1;
-  transform:none;
-  pointer-events:auto;
-}
-.cart{
-  background:#fff;
-  border-radius:20px;
-  padding:30px;
-  box-shadow:0 8px 20px rgba(0,0,0,.15);
-}
 
-/* ===== 封面頁 ===== */
-.cover{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:calc(100vh - 120px);
-}
-.cover-box{
-  text-align:center;
-  padding:70px 90px;
-  background:#ffffffdd;
-  border-radius:30px;
-}
-.cover-box h1{
-  font-size:50px;
-}
-.cover-box p{
-  font-size:18px;
-  margin:20px 0 30px;
-}
 
-/* ===== 日記列表 ===== */
-select{
-  padding:6px 10px;
-  border-radius:8px;
-  margin:0 5px;
-}
-ul{ list-style:none; padding:0; }
-li{ margin:10px 0; }
-
-button{
-  border:none;
-  border-radius:20px;
-  padding:8px 16px;
-  background:linear-gradient(135deg,#667eea,#764ba2);
-  color:#fff;
-  cursor:pointer;
-}
-button.secondary{
-  background:#ddd;
-  color:#333;
-}
-</style>
-</head>
-
-<body>
-
-<!-- ===== 封面頁 ===== -->
-<section class="page active cover" id="page-title">
-  <div class="cover-box">
-    <h1>📔 我的生活日記</h1>
-    <p>記錄每天的想法與片段</p>
-    <button onclick="goPage('page-list')">開始</button>
-  </div>
-</section>
-
-<header>
-  <button class="secondary" onclick="goPage('page-title')">首頁</button>
-  <button class="secondary" onclick="goPage('page-list')">日記</button>
-</header>
-
-<!-- ===== 日記列表頁 ===== -->
-<section class="page" id="page-list">
-  <div class="cart">
-    <h2>📅 日記列表</h2>
-
-    年份：
-    <select id="yearSelect" onchange="renderDiary()"></select>
-
-    月份：
-    <select id="monthSelect" onchange="renderDiary()"></select>
-
-    <ul id="diaryList"></ul>
-  </div>
-</section>
-
-<!-- ===== 單篇日記頁 ===== -->
-<section class="page" id="page-detail">
-  <div class="cart">
-    <h3 id="diaryDate"></h3>
-    <p id="diaryContent"></p>
-    <button onclick="goPage('page-list')">返回</button>
-  </div>
-</section>
-
-<script>
-/* ===== 多頁切換（保留你原本邏輯） ===== */
-function goPage(id){
-  document.querySelectorAll('.page')
-    .forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-
-/* ===== 日記資料 ===== */
-const diaryData={
-  2024:{
-    12:{
-      25:"聖誕節，天氣很好。",
-      26:"完成日記網站，很開心。"
-    },
-    11:{
-      3:"下雨，在家看書。"
-    }
+  {
+  "name": "coolors-like",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  2023:{
-    5:{
-      10:"第一次開始寫日記。"
-    }
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.0",
+    "vite": "^5.0.0"
   }
-};
-
-/* ===== 初始化年份 ===== */
-const yearSelect=document.getElementById("yearSelect");
-const monthSelect=document.getElementById("monthSelect");
-const diaryList=document.getElementById("diaryList");
-
-function init(){
-  Object.keys(diaryData).forEach(y=>{
-    yearSelect.innerHTML+=`<option value="${y}">${y}</option>`;
-  });
-  renderMonths();
-  renderDiary();
 }
 
-function renderMonths(){
-  const y=yearSelect.value;
-  monthSelect.innerHTML="";
-  Object.keys(diaryData[y]).forEach(m=>{
-    monthSelect.innerHTML+=`<option value="${m}">${m} 月</option>`;
-  });
+    import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  base: "/coolors-like/" // ⚠️ 之後改成你的 repo 名稱
+});
+
+
+  import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./styles/global.css";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+import { Link } from "react-router-dom";
+
+export default function ColorCard({ palette }) {
+  return (
+    <Link to={`/palette/${palette.id}`} className="card">
+      <div className="colors">
+        {palette.colors.map(c => (
+          <div key={c} style={{ background: c }} />
+        ))}
+      </div>
+      <p>{palette.name}</p>
+    </Link>
+  );
+}
+import { useParams } from "react-router-dom";
+import { palettes } from "../data/palettes";
+
+export default function Palette() {
+  const { id } = useParams();
+  const palette = palettes.find(p => p.id === id);
+
+  if (!palette) return <p>Palette not found</p>;
+
+  return (
+    <div className="palette-page">
+      <h1>{palette.name}</h1>
+      <div className="palette-full">
+        {palette.colors.map(c => (
+          <div key={c} style={{ background: c }}>
+            <span>{c}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #fafafa;
 }
 
-function renderDiary(){
-  renderMonths();
-  const y=yearSelect.value;
-  const m=monthSelect.value;
-  diaryList.innerHTML="";
-  Object.keys(diaryData[y][m]).forEach(d=>{
-    diaryList.innerHTML+=`
-      <li>
-        <button onclick="openDiary(${y},${m},${d})">
-          ${m}/${d}
-        </button>
-      </li>`;
-  });
+.container {
+  padding: 32px;
 }
 
-function openDiary(y,m,d){
-  document.getElementById("diaryDate").textContent=
-    `${y} / ${m} / ${d}`;
-  document.getElementById("diaryContent").textContent=
-    diaryData[y][m][d];
-  goPage("page-detail");
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
 }
 
-init();
-</script>
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  text-decoration: none;
+  color: black;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.colors {
+  display: flex;
+  height: 80px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.colors div {
+  flex: 1;
+}
+
+.palette-page {
+  padding: 32px;
+}
+
+.palette-full {
+  display: flex;
+  height: 300px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.palette-full div {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  padding: 12px;
+  color: white;
+  font-weight: bold;
+}
+  
+npm install
+npm run dev
+
 
 
 </body>
