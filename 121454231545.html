@@ -85,9 +85,7 @@ button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:whit
 <main id="app"></main>
 
 <script>
-// ---------------- 核心變數 ----------------
-const app = document.getElementById("app");
-
+// ---------------- Palette 資料 ----------------
 const palettes = [
   { id:"warm_clay", name:"Warm Clay", colors:[
     {hex:"#EA825D", img:"https://picsum.photos/seed/1/300/200"},
@@ -106,33 +104,125 @@ const palettes = [
     {hex:"#B17E81", img:"https://picsum.photos/seed/10/300/200"},
     {hex:"#E0B8B7", img:"https://picsum.photos/seed/11/300/200"},
     {hex:"#F9F5F5", img:"https://picsum.photos/seed/12/300/200"}
+  ]},
+  { id:"steel_blue", name:"Steel Blue", colors:[
+    {hex:"#3D5C8A", img:"https://picsum.photos/seed/13/300/200"},
+    {hex:"#9DBCD6", img:"https://picsum.photos/seed/14/300/200"},
+    {hex:"#F0F1F2", img:"https://picsum.photos/seed/15/300/200"},
+    {hex:"#F3B092", img:"https://picsum.photos/seed/16/300/200"}
+  ]},
+  { id:"soft_apricot", name:"Soft Apricot", colors:[
+    {hex:"#F9CD2C", img:"https://picsum.photos/seed/17/300/200"},
+    {hex:"#EDC491", img:"https://picsum.photos/seed/18/300/200"},
+    {hex:"#F5DFD6", img:"https://picsum.photos/seed/19/300/200"},
+    {hex:"#FCF8F6", img:"https://picsum.photos/seed/20/300/200"}
+  ]},
+  { id:"sky_mist", name:"Sky Mist", colors:[
+    {hex:"#7EB7E4", img:"https://picsum.photos/seed/21/300/200"},
+    {hex:"#CCD9E8", img:"https://picsum.photos/seed/22/300/200"},
+    {hex:"#C4AFB0", img:"https://picsum.photos/seed/23/300/200"},
+    {hex:"#F5F7F9", img:"https://picsum.photos/seed/24/300/200"}
+  ]},
+  { id:"olive_garden", name:"Olive Garden", colors:[
+    {hex:"#496128", img:"https://picsum.photos/seed/25/300/200"},
+    {hex:"#59751E", img:"https://picsum.photos/seed/26/300/200"},
+    {hex:"#9DA483", img:"https://picsum.photos/seed/27/300/200"},
+    {hex:"#F7EDE9", img:"https://picsum.photos/seed/28/300/200"}
+  ]},
+  { id:"stone_gray", name:"Stone Gray", colors:[
+    {hex:"#2F2F2F", img:"https://picsum.photos/seed/29/300/200"},
+    {hex:"#6B6B6B", img:"https://picsum.photos/seed/30/300/200"},
+    {hex:"#B6B6B6", img:"https://picsum.photos/seed/31/300/200"},
+    {hex:"#F2F2F2", img:"https://picsum.photos/seed/32/300/200"}
+  ]},
+  { id:"lavender_gray", name:"Lavender Gray", colors:[
+    {hex:"#7C717A", img:"https://picsum.photos/seed/33/300/200"},
+    {hex:"#A38E93", img:"https://picsum.photos/seed/34/300/200"},
+    {hex:"#D1BBC0", img:"https://picsum.photos/seed/35/300/200"},
+    {hex:"#F9F7F8", img:"https://picsum.photos/seed/36/300/200"}
+  ]},
+  { id:"mist_blue", name:"Mist Blue", colors:[
+    {hex:"#6FA8B8", img:"https://picsum.photos/seed/37/300/200"},
+    {hex:"#9FC6CF", img:"https://picsum.photos/seed/38/300/200"},
+    {hex:"#CFE2E6", img:"https://picsum.photos/seed/39/300/200"},
+    {hex:"#F2F7F8", img:"https://picsum.photos/seed/40/300/200"}
+  ]},
+  { id:"deep_teal", name:"Deep Teal", colors:[
+    {hex:"#0E3F44", img:"https://picsum.photos/seed/41/300/200"},
+    {hex:"#1F6A70", img:"https://picsum.photos/seed/42/300/200"},
+    {hex:"#6FB3B8", img:"https://picsum.photos/seed/43/300/200"},
+    {hex:"#DCEEEF", img:"https://picsum.photos/seed/44/300/200"}
+  ]},
+  { id:"ice_blue", name:"Ice Blue", colors:[
+    {hex:"#7EB7E4", img:"https://picsum.photos/seed/45/300/200"},
+    {hex:"#B9D8EC", img:"https://picsum.photos/seed/46/300/200"},
+    {hex:"#E4F0F7", img:"https://picsum.photos/seed/47/300/200"},
+    {hex:"#F7FBFD", img:"https://picsum.photos/seed/48/300/200"}
+  ]},
+  { id:"moss_dark", name:"Moss Dark", colors:[
+    {hex:"#1F2E23", img:"https://picsum.photos/seed/49/300/200"},
+    {hex:"#4A5E49", img:"https://picsum.photos/seed/50/300/200"},
+    {hex:"#8E9E8B", img:"https://picsum.photos/seed/51/300/200"},
+    {hex:"#ECEFEA", img:"https://picsum.photos/seed/52/300/200"}
+  ]},
+  { id:"sage_soft", name:"Sage Soft", colors:[
+    {hex:"#6E7F73", img:"https://picsum.photos/seed/53/300/200"},
+    {hex:"#9FB0A3", img:"https://picsum.photos/seed/54/300/200"},
+    {hex:"#CBD7CE", img:"https://picsum.photos/seed/55/300/200"},
+    {hex:"#F3F6F4", img:"https://picsum.photos/seed/56/300/200"}
+  ]},
+  { id:"warm_gray", name:"Warm Gray", colors:[
+    {hex:"#4E4744", img:"https://picsum.photos/seed/57/300/200"},
+    {hex:"#8B827C", img:"https://picsum.photos/seed/58/300/200"},
+    {hex:"#CFC7C3", img:"https://picsum.photos/seed/59/300/200"},
+    {hex:"#F7F4F2", img:"https://picsum.photos/seed/60/300/200"}
+  ]},
+  { id:"lavender_mute", name:"Lavender Mute", colors:[
+    {hex:"#6E6A7E", img:"https://picsum.photos/seed/61/300/200"},
+    {hex:"#9A96AD", img:"https://picsum.photos/seed/62/300/200"},
+    {hex:"#C9C6D8", img:"https://picsum.photos/seed/63/300/200"},
+    {hex:"#F5F4FA", img:"https://picsum.photos/seed/64/300/200"}
+  ]},
+  { id:"violet_dust", name:"Violet Dust", colors:[
+    {hex:"#7B5A6A", img:"https://picsum.photos/seed/65/300/200"},
+    {hex:"#A88597", img:"https://picsum.photos/seed/66/300/200"},
+    {hex:"#D2BAC6", img:"https://picsum.photos/seed/67/300/200"},
+    {hex:"#F8F2F5", img:"https://picsum.photos/seed/68/300/200"}
+  ]},
+  { id:"rose_powder", name:"Rose Powder", colors:[
+    {hex:"#A55B5E", img:"https://picsum.photos/seed/69/300/200"},
+    {hex:"#D39A9C", img:"https://picsum.photos/seed/70/300/200"},
+    {hex:"#EBC7C8", img:"https://picsum.photos/seed/71/300/200"},
+    {hex:"#FBF3F3", img:"https://picsum.photos/seed/72/300/200"}
+  ]},
+  { id:"blush_light", name:"Blush Light", colors:[
+    {hex:"#E58A8A", img:"https://picsum.photos/seed/73/300/200"},
+    {hex:"#F1B6B6", img:"https://picsum.photos/seed/74/300/200"},
+    {hex:"#F7DADA", img:"https://picsum.photos/seed/75/300/200"},
+    {hex:"#FDF6F6", img:"https://picsum.photos/seed/76/300/200"}
+  ]},
+  { id:"clay_earth", name:"Clay Earth", colors:[
+    {hex:"#5A4036", img:"https://picsum.photos/seed/77/300/200"},
+    {hex:"#9B7768", img:"https://picsum.photos/seed/78/300/200"},
+    {hex:"#D4B6AA", img:"https://picsum.photos/seed/79/300/200"},
+    {hex:"#F6EFEA", img:"https://picsum.photos/seed/80/300/200"}
+  ]},
+  { id:"moss_field", name:"Moss Field", colors:[
+    {hex:"#496128", img:"https://picsum.photos/seed/81/300/200"},
+    {hex:"#9BAC73", img:"https://picsum.photos/seed/82/300/200"},
+    {hex:"#C8D0B6", img:"https://picsum.photos/seed/83/300/200"},
+    {hex:"#F5F6F2", img:"https://picsum.photos/seed/84/300/200"}
+  ]},
+  { id:"soft_lilac", name:"Soft Lilac", colors:[
+    {hex:"#7C717A", img:"https://picsum.photos/seed/85/300/200"},
+    {hex:"#BB93B9", img:"https://picsum.photos/seed/86/300/200"},
+    {hex:"#D2BADC", img:"https://picsum.photos/seed/87/300/200"},
+    {hex:"#F9F4F8", img:"https://picsum.photos/seed/88/300/200"}
   ]}
-  { id:"warm_clay", name:"Warm Clay", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
-  { id:"golden_light", name:"Golden Light", colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
-  { id:"dusty_rose", name:"Dusty Rose", colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
-  { id:"steel_blue", name:"Steel Blue", colors:["#3D5C8A","#9DBCD6","#F0F1F2","#F3B092"] },
-  { id:"soft_apricot", name:"Soft Apricot", colors:["#F9CD2C","#EDC491","#F5DFD6","#FCF8F6"] },
-  { id:"sky_mist", name:"Sky Mist", colors:["#7EB7E4","#CCD9E8","#C4AFB0","#F5F7F9"] },
-  { id:"olive_garden", name:"Olive Garden", colors:["#496128","#59751E","#9DA483","#F7EDE9"] },
-  { id:"stone_gray", name:"Stone Gray", colors:["#2F2F2F","#6B6B6B","#B6B6B6","#F2F2F2"] },
-  { id:"lavender_gray", name:"Lavender Gray", colors:["#7C717A","#A38E93","#D1BBC0","#F9F7F8"] },
-  { id:"mist_blue", name:"Mist Blue", colors:["#6FA8B8","#9FC6CF","#CFE2E6","#F2F7F8"] },
-  { id:"deep_teal", name:"Deep Teal", colors:["#0E3F44","#1F6A70","#6FB3B8","#DCEEEF"] },
-  { id:"ice_blue", name:"Ice Blue", colors:["#7EB7E4","#B9D8EC","#E4F0F7","#F7FBFD"] },
-  { id:"moss_dark", name:"Moss Dark", colors:["#1F2E23","#4A5E49","#8E9E8B","#ECEFEA"] },
-  { id:"sage_soft", name:"Sage Soft", colors:["#6E7F73","#9FB0A3","#CBD7CE","#F3F6F4"] },
-  { id:"warm_gray", name:"Warm Gray", colors:["#4E4744","#8B827C","#CFC7C3","#F7F4F2"] },
-  { id:"lavender_mute", name:"Lavender Mute", colors:["#6E6A7E","#9A96AD","#C9C6D8","#F5F4FA"] },
-  { id:"violet_dust", name:"Violet Dust", colors:["#7B5A6A","#A88597","#D2BAC6","#F8F2F5"] },
-  { id:"rose_powder", name:"Rose Powder", colors:["#A55B5E","#D39A9C","#EBC7C8","#FBF3F3"] },
-  { id:"blush_light", name:"Blush Light", colors:["#E58A8A","#F1B6B6","#F7DADA","#FDF6F6"] },
-  { id:"clay_earth", name:"Clay Earth", colors:["#5A4036","#9B7768","#D4B6AA","#F6EFEA"] },
-  { id:"moss_field", name:"Moss Field", colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
-  { id:"soft_lilac", name:"Soft Lilac", colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
-
 ];
 
-let favorites=JSON.parse(localStorage.getItem("fav")||"[]");
+
+let favorites = JSON.parse(localStorage.getItem("fav")||"[]");
 let currentPage = null;
 
 // ---------------- 工具函數 ----------------
@@ -157,7 +247,7 @@ function rgbToHsl(r,g,b){
   return {h,s,l};
 }
 
-// ---------------- 分頁顯示 ----------------
+// ---------------- 分頁切換 ----------------
 function showPage(newPage){
   if(currentPage){
     currentPage.classList.remove("active");
@@ -282,3 +372,4 @@ router();
   
 </body>
 </html>
+
