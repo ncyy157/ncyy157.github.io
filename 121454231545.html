@@ -123,6 +123,24 @@ main{
   cursor:pointer;
 }
 
+  /* ---------- Nipponcolors UI tuning ---------- */
+
+.card{
+  box-shadow:none;
+  border-radius:0;
+}
+
+.colors{
+  height:140px;
+}
+
+.card-footer{
+  font-size:13px;
+  letter-spacing:.4px;
+  opacity:.8;
+}
+
+
 </style>
 </head>
 
@@ -136,8 +154,41 @@ main{
 
 <script>
 /* ---------- Utilities ---------- */
-const randColor=()=>"#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0").toUpperCase();
-const randPalette=()=>Array.from({length:4},randColor);
+  /* ---------- Nippon-style Color System ---------- */
+const baseColors = [
+  { name:"Crimson", hue:0 },
+  { name:"Vermilion", hue:15 },
+  { name:"Amber", hue:38 },
+  { name:"Olive", hue:75 },
+  { name:"Forest", hue:135 },
+  { name:"Teal", hue:180 },
+  { name:"Indigo", hue:220 },
+  { name:"Ultramarine", hue:240 },
+  { name:"Plum", hue:280 }
+];
+
+function hslToHex(h,s,l){
+  s/=100; l/=100;
+  const k=n=>(n+h/30)%12;
+  const a=s*Math.min(l,1-l);
+  const f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)));
+  return "#"+[f(0),f(8),f(4)]
+    .map(x=>Math.round(255*x).toString(16).padStart(2,"0"))
+    .join("").toUpperCase();
+}
+
+function generatePalette(){
+  const base = baseColors[Math.floor(Math.random()*baseColors.length)];
+  const s = 45 + Math.random()*15;     // 設計安全彩度
+  const steps = [88,68,48,28];         // Nipponcolors 風格明度階梯
+
+  return {
+    id:"p"+Date.now(),
+    name: base.name,
+    colors: steps.map(l => hslToHex(base.hue,s,l))
+  };
+}
+
 
 /* ---------- State ---------- */
 let palettes=[
@@ -242,11 +293,11 @@ function toggleFav(id){
 /* ---------- Keyboard ---------- */
 window.addEventListener("keydown",e=>{
   if(e.code==="Space" && location.hash==="#home"){
-    const id="p"+Date.now();
-    palettes.unshift({id,name:"Random Palette",colors:randPalette()});
+    palettes.unshift(generatePalette());
     renderHome();
   }
 });
+
 
 window.addEventListener("hashchange",router);
 router();
