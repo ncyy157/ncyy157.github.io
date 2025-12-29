@@ -187,10 +187,83 @@ const app = document.getElementById("app");
 
 /* ---------- 固定 Nippon-style 色票 ---------- */
 const palettes=[
-  {id:"sunset",name:"Sunset",colors:["#FF6B6B","#FFD93D","#6BCB77","#4D96FF"]},
-  {id:"forest",name:"Forest",colors:["#2E8B57","#556B2F","#6B8E23","#66CDAA"]},
-  {id:"ocean",name:"Ocean",colors:["#1E90FF","#00CED1","#20B2AA","#4682B4"]},
-  {id:"pastel",name:"Pastel",colors:["#FFB6C1","#FFDAB9","#E6E6FA","#B0E0E6"]}
+  { id:"warm_clay", name:"Warm Clay",
+    colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
+
+  { id:"golden_light", name:"Golden Light",
+    colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
+
+  { id:"dusty_rose", name:"Dusty Rose",
+    colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
+
+  { id:"steel_blue", name:"Steel Blue",
+    colors:["#3D5C8A","#9DBCD6","#F0F1F2","#F3B092"] },
+
+  { id:"soft_apricot", name:"Soft Apricot",
+    colors:["#F9CD2C","#EDC491","#F5DFD6","#FCF8F6"] },
+
+  { id:"sandstone", name:"Sandstone",
+    colors:["#957566","#CBA898","#E8CBC5","#FAF6F5"] },
+
+  { id:"sky_mist", name:"Sky Mist",
+    colors:["#7EB7E4","#CCD9E8","#C4AFB0","#F5F7F9"] },
+
+  { id:"olive_garden", name:"Olive Garden",
+    colors:["#496128","#59751E","#9DA483","#F7EDE9"] },
+
+  { id:"earth_brown", name:"Earth Brown",
+    colors:["#634D40","#A68B8B","#E0C7BE","#F8F5F4"] },
+
+  { id:"lavender_gray", name:"Lavender Gray",
+    colors:["#7C717A","#A38E93","#D1BBC0","#F9F7F8"] },
+
+  { id:"moss_field", name:"Moss Field",
+    colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
+
+  { id:"soft_lilac", name:"Soft Lilac",
+    colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
+  
+  // ── Blue / Cyan 系 ─────────────────
+  { id:"mist_blue", name:"Mist Blue",
+    colors:["#6FA8B8","#9FC6CF","#CFE2E6","#F2F7F8"] },
+
+  { id:"deep_teal", name:"Deep Teal",
+    colors:["#0E3F44","#1F6A70","#6FB3B8","#DCEEEF"] },
+
+  { id:"ice_blue", name:"Ice Blue",
+    colors:["#7EB7E4","#B9D8EC","#E4F0F7","#F7FBFD"] },
+
+  // ── Green / Olive 系 ───────────────
+  { id:"moss_dark", name:"Moss Dark",
+    colors:["#1F2E23","#4A5E49","#8E9E8B","#ECEFEA"] },
+
+  { id:"sage_soft", name:"Sage Soft",
+    colors:["#6E7F73","#9FB0A3","#CBD7CE","#F3F6F4"] },
+
+  // ── Neutral / Gray 系 ──────────────
+  { id:"stone_gray", name:"Stone Gray",
+    colors:["#2F2F2F","#6B6B6B","#B6B6B6","#F2F2F2"] },
+
+  { id:"warm_gray", name:"Warm Gray",
+    colors:["#4E4744","#8B827C","#CFC7C3","#F7F4F2"] },
+
+  // ── Purple / Lavender 系 ───────────
+  { id:"lavender_mute", name:"Lavender Mute",
+    colors:["#6E6A7E","#9A96AD","#C9C6D8","#F5F4FA"] },
+
+  { id:"violet_dust", name:"Violet Dust",
+    colors:["#7B5A6A","#A88597","#D2BAC6","#F8F2F5"] },
+
+  // ── Pink / Rose 系 ─────────────────
+  { id:"rose_powder", name:"Rose Powder",
+    colors:["#A55B5E","#D39A9C","#EBC7C8","#FBF3F3"] },
+
+  { id:"blush_light", name:"Blush Light",
+    colors:["#E58A8A","#F1B6B6","#F7DADA","#FDF6F6"] },
+
+  // ── Brown / Earth 系 ───────────────
+  { id:"clay_earth", name:"Clay Earth",
+    colors:["#5A4036","#9B7768","#D4B6AA","#F6EFEA"] }
 ];
 
 let favorites=JSON.parse(localStorage.getItem("fav")||"[]");
