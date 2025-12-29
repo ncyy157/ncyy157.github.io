@@ -85,6 +85,19 @@ button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:whit
 <main id="app"></main>
 
 <script>
+
+// ---------------- 取得 app 容器 ----------------
+const app = document.getElementById("app");
+
+let favorites = JSON.parse(localStorage.getItem("fav")||"[]");
+let currentPage = null;
+
+// ---------------- 工具函數 ----------------
+function hexToRgb(hex){
+  const v=parseInt(hex.slice(1),16);
+  return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
+}
+
 // ---------------- Palette 資料 ----------------
 const palettes = [
   { id:"warm_clay", name:"Warm Clay", colors:[
