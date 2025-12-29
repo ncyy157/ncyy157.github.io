@@ -7,167 +7,184 @@
 
 <style>
 body{
-  font-family:"Segoe UI",Arial,sans-serif;
   margin:0;
+  font-family:"Segoe UI",system-ui,sans-serif;
   background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
 }
+
 header{
   background:#ffffffcc;
   padding:20px;
   text-align:center;
   box-shadow:0 4px 10px rgba(0,0,0,.1);
+  position:sticky;
+  top:0;
 }
-.page{
-  position:absolute;
-  top:120px;
-  left:0;
-  right:0;
+
+h1{ margin:0; }
+
+main{
   max-width:1000px;
-  margin:auto;
-  padding:30px;
-  opacity:0;
-  transform:translateX(30px);
-  pointer-events:none;
-  transition:.4s;
+  margin:40px auto;
+  padding:0 20px;
+}
 
+/* 色票牆 */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
 
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:12px;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+  transition:.25s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+}
+
+.colors{
+  display:flex;
+  height:80px;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.colors div{
+  flex:1;
+}
+
+.card p{
+  margin:10px 0 0;
+  font-weight:600;
+}
+
+/* 設計頁 */
+.palette-page h2{
+  margin-bottom:20px;
+}
+
+.palette-full{
+  display:flex;
+  height:300px;
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.palette-full div{
+  flex:1;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:12px;
+  color:white;
+  font-weight:bold;
+  letter-spacing:.5px;
+}
+
+.back{
+  margin-bottom:20px;
+  display:inline-block;
+  color:#333;
+  text-decoration:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎨 Color Palettes</h1>
+</header>
+
+<main id="app"></main>
+
+<script>
+/* ===== 色票資料 ===== */
+const palettes = [
   {
-  "name": "coolors-like",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    id:"sunset",
+    name:"Sunset Glow",
+    colors:["#FF6B6B","#FFD93D","#6BCB77","#4D96FF"]
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.0"
+  {
+    id:"ocean",
+    name:"Ocean Calm",
+    colors:["#03045E","#0077B6","#00B4D8","#90E0EF"]
   },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^4.2.0",
-    "vite": "^5.0.0"
+  {
+    id:"forest",
+    name:"Forest Mood",
+    colors:["#2D6A4F","#40916C","#74C69D","#B7E4C7"]
+  }
+];
+
+/* ===== Router ===== */
+function router(){
+  const hash = location.hash;
+
+  if(hash.startsWith("#palette/")){
+    const id = hash.split("/")[1];
+    renderPalette(id);
+  }else{
+    renderHome();
   }
 }
 
-    import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-
-export default defineConfig({
-  plugins: [react()],
-  base: "/coolors-like/" // ⚠️ 之後改成你的 repo 名稱
-});
-
-
-  import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "./App";
-import "./styles/global.css";
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <App />
-  </BrowserRouter>
-);
-import { Link } from "react-router-dom";
-
-export default function ColorCard({ palette }) {
-  return (
-    <Link to={`/palette/${palette.id}`} className="card">
-      <div className="colors">
-        {palette.colors.map(c => (
-          <div key={c} style={{ background: c }} />
-        ))}
-      </div>
-      <p>{palette.name}</p>
-    </Link>
-  );
-}
-import { useParams } from "react-router-dom";
-import { palettes } from "../data/palettes";
-
-export default function Palette() {
-  const { id } = useParams();
-  const palette = palettes.find(p => p.id === id);
-
-  if (!palette) return <p>Palette not found</p>;
-
-  return (
-    <div className="palette-page">
-      <h1>{palette.name}</h1>
-      <div className="palette-full">
-        {palette.colors.map(c => (
-          <div key={c} style={{ background: c }}>
-            <span>{c}</span>
+/* ===== 首頁 ===== */
+function renderHome(){
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="grid">
+      ${palettes.map(p=>`
+        <div class="card" onclick="goPalette('${p.id}')">
+          <div class="colors">
+            ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
           </div>
-        ))}
+          <p>${p.name}</p>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+/* ===== 設計頁 ===== */
+function renderPalette(id){
+  const p = palettes.find(x=>x.id===id);
+  if(!p){
+    location.hash="";
+    return;
+  }
+
+  const app = document.getElementById("app");
+  app.innerHTML = `
+    <a class="back" href="#">← Back</a>
+    <div class="palette-page">
+      <h2>${p.name}</h2>
+      <div class="palette-full">
+        ${p.colors.map(c=>`
+          <div style="background:${c}">${c}</div>
+        `).join("")}
       </div>
     </div>
-  );
-}
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: #fafafa;
+  `;
 }
 
-.container {
-  padding: 32px;
+function goPalette(id){
+  location.hash = "palette/" + id;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  text-decoration: none;
-  color: black;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-}
-
-.colors {
-  display: flex;
-  height: 80px;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.colors div {
-  flex: 1;
-}
-
-.palette-page {
-  padding: 32px;
-}
-
-.palette-full {
-  display: flex;
-  height: 300px;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.palette-full div {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  padding: 12px;
-  color: white;
-  font-weight: bold;
-}
-  
-npm install
-npm run dev
-
-
+/* 初始化 */
+window.addEventListener("hashchange",router);
+router();
+</script>
 
 </body>
 </html>
+
