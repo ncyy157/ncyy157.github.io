@@ -94,6 +94,35 @@ main{
   color:#333;
   text-decoration:none;
 }
+
+  .intro{
+  min-height:70vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.intro h2{
+  font-size:42px;
+  margin-bottom:10px;
+}
+
+.intro p{
+  color:#555;
+  margin-bottom:30px;
+}
+
+.start-btn{
+  background:#111;
+  color:white;
+  padding:14px 26px;
+  border-radius:30px;
+  font-size:16px;
+  cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -106,83 +135,123 @@ main{
 <main id="app"></main>
 
 <script>
-/* ===== 色票資料 ===== */
-const palettes = [
-  {
-    id:"sunset",
-    name:"Sunset Glow",
-    colors:["#FF6B6B","#FFD93D","#6BCB77","#4D96FF"]
-  },
-  {
-    id:"ocean",
-    name:"Ocean Calm",
-    colors:["#03045E","#0077B6","#00B4D8","#90E0EF"]
-  },
-  {
-    id:"forest",
-    name:"Forest Mood",
-    colors:["#2D6A4F","#40916C","#74C69D","#B7E4C7"]
-  }
+/* ---------- Utilities ---------- */
+const randColor=()=>"#"+Math.floor(Math.random()*16777215).toString(16).padStart(6,"0").toUpperCase();
+const randPalette=()=>Array.from({length:4},randColor);
+
+/* ---------- State ---------- */
+let palettes=[
+  {id:"sunset",name:"Sunset",colors:["#FF6B6B","#FFD93D","#6BCB77","#4D96FF"]}
 ];
+let favorites=JSON.parse(localStorage.getItem("fav")||"[]");
 
-/* ===== Router ===== */
+/* ---------- Router ---------- */
 function router(){
-  const hash = location.hash;
-
-  if(hash.startsWith("#palette/")){
-    const id = hash.split("/")[1];
-    renderPalette(id);
-  }else{
-    renderHome();
-  }
+  const h=location.hash || "#intro";
+  if(h==="#intro") renderIntro();
+  else if(h==="#home") renderHome();
+  else if(h.startsWith("#palette/")) renderPalette(h.split("/")[1]);
+  else if(h.startsWith("#color/")) renderColor(h.split("/")[1]);
+  else renderIntro();
 }
 
-/* ===== 首頁 ===== */
-function renderHome(){
-  const app = document.getElementById("app");
-  app.innerHTML = `
-    <div class="grid">
-      ${palettes.map(p=>`
-        <div class="card" onclick="goPalette('${p.id}')">
-          <div class="colors">
-            ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
-          </div>
-          <p>${p.name}</p>
-        </div>
-      `).join("")}
+/* ---------- Intro ---------- */
+function renderIntro(){
+  app.innerHTML=`
+    <div class="intro">
+      <h2>🎨 Color Palette Lab</h2>
+      <p>Generate, explore, and save beautiful color palettes.</p>
+      <div class="start-btn" onclick="startApp()">Start Generating</div>
     </div>
   `;
 }
 
-/* ===== 設計頁 ===== */
-function renderPalette(id){
-  const p = palettes.find(x=>x.id===id);
-  if(!p){
-    location.hash="";
-    return;
-  }
+function startApp(){
+  location.hash="#home";
+}
 
-  const app = document.getElementById("app");
-  app.innerHTML = `
-    <a class="back" href="#">← Back</a>
-    <div class="palette-page">
-      <h2>${p.name}</h2>
-      <div class="palette-full">
-        ${p.colors.map(c=>`
-          <div style="background:${c}">${c}</div>
-        `).join("")}
+/* ---------- Home ---------- */
+function renderHome(){
+  app.innerHTML=`
+  <div class="grid">
+  ${palettes.map(p=>`
+    <div class="card">
+      <div class="colors" onclick="goPalette('${p.id}')">
+        ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
+      </div>
+      <div class="card-footer">
+        <b>${p.name}</b>
+        <span class="heart" onclick="toggleFav('${p.id}')">
+          ${favorites.includes(p.id)?"❤️":"🤍"}
+        </span>
       </div>
     </div>
-  `;
+  `).join("")}
+  </div>`;
 }
 
-function goPalette(id){
-  location.hash = "palette/" + id;
+/* ---------- Palette Page ---------- */
+function renderPalette(id){
+  const p=palettes.find(x=>x.id===id);
+  if(!p){location.hash="#home";return;}
+  app.innerHTML=`
+  <a class="back" href="#home">← Back</a>
+  <div class="palette-full">
+    ${p.colors.map(c=>`
+      <div style="background:${c}" onclick="goColor('${c.slice(1)}')">${c}</div>
+    `).join("")}
+  </div>
+
+  <h2>UI Preview</h2>
+  <div class="ui-demo">
+    <div class="demo-card">
+      <button style="background:${p.colors[0]}">Primary Button</button>
+    </div>
+    <div class="demo-card" style="border-top:6px solid ${p.colors[1]}">
+      Card Highlight
+    </div>
+    <div class="demo-card" style="background:${p.colors[2]};color:white">
+      Hero Section
+    </div>
+  </div>`;
 }
 
-/* 初始化 */
+/* ---------- Color Page ---------- */
+function renderColor(hex){
+  const c="#"+hex;
+  app.innerHTML=`
+  <a class="back" href="#home">← Back</a>
+  <div class="color-page">
+    <div class="color-box" style="background:${c}">${c}</div>
+    <p>Use this color as background, accent, or highlight.</p>
+  </div>`;
+}
+
+/* ---------- Actions ---------- */
+function goPalette(id){ location.hash="#palette/"+id; }
+function goColor(hex){ location.hash="#color/"+hex; }
+
+function toggleFav(id){
+  favorites = favorites.includes(id)
+    ? favorites.filter(x=>x!==id)
+    : [...favorites,id];
+  localStorage.setItem("fav",JSON.stringify(favorites));
+  renderHome();
+}
+
+/* ---------- Keyboard ---------- */
+window.addEventListener("keydown",e=>{
+  if(e.code==="Space" && location.hash==="#home"){
+    const id="p"+Date.now();
+    palettes.unshift({id,name:"Random Palette",colors:randPalette()});
+    renderHome();
+  }
+});
+
 window.addEventListener("hashchange",router);
 router();
+</script>
+
 </script>
 
 
