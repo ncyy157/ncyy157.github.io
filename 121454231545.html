@@ -4,79 +4,83 @@
   <meta charset="UTF-8">
   <title>prototype</title>
   <link rel="icon" href="9582013.png">
-
-<style>
-body{
-  margin:0;
-  font-family:"Segoe UI",system-ui,sans-serif;
-  background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
-  overflow-x:hidden;
-}
-header{
-  background:#ffffffcc;
-  padding:20px;
-  text-align:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
-  position:sticky;
-  top:0;
-  z-index:10;
-}
-h1{ margin:0; }
-main{
-  max-width:1200px;
-  margin:40px auto;
-  padding:0 20px;
-  position:relative;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-  gap:20px;
-}
-.card{
-  background:#fff;
-  border-radius:12px;
-  cursor:pointer;
-  transition:.25s;
-  overflow:hidden;
-}
-.card:hover{transform:translateY(-4px);}
-.colors{display:flex;height:120px;}
-.colors div{flex:1;}
-.card p{margin:10px;font-weight:600;text-align:center;}
-.palette-full{
-  display:flex;height:300px;border-radius:18px;overflow:hidden;margin-bottom:20px;
-  transition:all 0.5s ease;
-}
-.palette-full div{
-  flex:1;display:flex;align-items:flex-end;justify-content:center;padding:12px;
-  color:white;font-weight:bold;letter-spacing:.5px;cursor:pointer;
-}
-.back{margin-bottom:20px;display:inline-block;color:#333;text-decoration:none;}
-.color-page{text-align:center;}
-.color-box{
-  height:220px;border-radius:20px;display:flex;align-items:center;
-  justify-content:center;color:white;font-size:24px;font-weight:bold;margin-bottom:20px;
-}
-.ui-demo{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;
-}
-.demo-card{
-  background:white;padding:20px;border-radius:14px;text-align:center;
-}
-button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:white;}
-.heart{float:right;cursor:pointer;}
-#color-info{
-  opacity:0;transform:translateY(20px);transition:all 0.4s ease;margin-top:20px;
-}
-#color-info.show{opacity:1;transform:translateY(0);}
-.page{
-  position:absolute;width:100%;top:0;left:100%;opacity:0;transition:all 0.5s ease;
-}
-.page.active{left:0;opacity:1;}
-.page.exit-left{left:-100%;opacity:0;}
-.page.exit-right{left:100%;opacity:0;}
-</style>
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>🎨 Nippon Colors Demo</title>
+  <style>
+    body{
+      margin:0;
+      font-family:"Segoe UI",system-ui,sans-serif;
+      background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
+      overflow-x:hidden;
+    }
+    header{
+      background:#ffffffcc;
+      padding:20px;
+      text-align:center;
+      box-shadow:0 4px 10px rgba(0,0,0,.1);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    h1{ margin:0; }
+    main{
+      max-width:1200px;
+      margin:40px auto;
+      padding:0 20px;
+      position:relative;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+      gap:20px;
+    }
+    .card{
+      background:#fff;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.25s;
+      overflow:hidden;
+    }
+    .card:hover{transform:translateY(-4px);}
+    .colors{display:flex;height:120px;}
+    .colors div{flex:1;}
+    .card p{margin:10px;font-weight:600;text-align:center;}
+    .palette-full{
+      display:flex;height:300px;border-radius:18px;overflow:hidden;margin-bottom:20px;
+      transition:all 0.5s ease;
+    }
+    .palette-full div{
+      flex:1;display:flex;align-items:flex-end;justify-content:center;padding:12px;
+      color:white;font-weight:bold;letter-spacing:.5px;cursor:pointer;
+    }
+    .back{margin-bottom:20px;display:inline-block;color:#333;text-decoration:none;}
+    .color-page{text-align:center;}
+    .color-box{
+      height:220px;border-radius:20px;display:flex;align-items:center;
+      justify-content:center;color:white;font-size:24px;font-weight:bold;margin-bottom:20px;
+    }
+    .ui-demo{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;
+    }
+    .demo-card{
+      background:white;padding:20px;border-radius:14px;text-align:center;
+    }
+    button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:white;}
+    .heart{float:right;cursor:pointer;}
+    #color-info{
+      opacity:0;transform:translateY(20px);transition:all 0.4s ease;margin-top:20px;
+    }
+    #color-info.show{opacity:1;transform:translateY(0);}
+    .page{
+      position:absolute;width:100%;top:0;left:100%;opacity:0;transition:all 0.5s ease;
+    }
+    .page.active{left:0;opacity:1;}
+    .page.exit-left{left:-100%;opacity:0;}
+    .page.exit-right{left:100%;opacity:0;}
+  </style>
 </head>
 <body>
 <header>
@@ -85,21 +89,8 @@ button{border:none;padding:10px 16px;border-radius:8px;cursor:pointer;color:whit
 <main id="app"></main>
 
 <script>
-
-// ---------------- 取得 app 容器 ----------------
-const app = document.getElementById("app");
-
-let favorites = JSON.parse(localStorage.getItem("fav")||"[]");
-let currentPage = null;
-
-// ---------------- 工具函數 ----------------
-function hexToRgb(hex){
-  const v=parseInt(hex.slice(1),16);
-  return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
-}
-
-// ---------------- Palette 資料 ----------------
-const palettes = [
+  // ---------------- Palette 資料 ----------------
+  const palettes = [
 { id:"warm_clay", name:"Warm Clay", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
   { id:"golden_light", name:"Golden Light", colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
   { id:"dusty_rose", name:"Dusty Rose", colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
@@ -123,155 +114,153 @@ const palettes = [
   { id:"moss_field", name:"Moss Field", colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
   { id:"soft_lilac", name:"Soft Lilac", colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
 
-];
+  ];
 
-let favorites = JSON.parse(localStorage.getItem("fav")||"[]");
-let currentPage = null;
+  let favorites = JSON.parse(localStorage.getItem("fav")||"[]");
+  let currentPage = null;
 
-// ---------------- 工具函數 ----------------
-function hexToRgb(hex){
-  const v=parseInt(hex.slice(1),16);
-  return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
-}
-function rgbToHsl(r,g,b){
-  r/=255; g/=255; b/=255;
-  const max=Math.max(r,g,b), min=Math.min(r,g,b);
-  let h,s,l=(max+min)/2;
-  if(max===min){ h=s=0; } else{
-    const d=max-min;
-    s=l>0.5?d/(2-max-min):d/(max+min);
-    switch(max){
-      case r: h=(g-b)/d+(g<b?6:0); break;
-      case g: h=(b-r)/d+2; break;
-      case b: h=(r-g)/d+4; break;
+  // ---------------- 工具函數 ----------------
+  function hexToRgb(hex){
+    const v=parseInt(hex.slice(1),16);
+    return { r:(v>>16)&255, g:(v>>8)&255, b:v&255 };
+  }
+  function rgbToHsl(r,g,b){
+    r/=255; g/=255; b/=255;
+    const max=Math.max(r,g,b), min=Math.min(r,g,b);
+    let h,s,l=(max+min)/2;
+    if(max===min){ h=s=0; } else{
+      const d=max-min;
+      s=l>0.5?d/(2-max-min):d/(max+min);
+      switch(max){
+        case r: h=(g-b)/d+(g<b?6:0); break;
+        case g: h=(b-r)/d+2; break;
+        case b: h=(r-g)/d+4; break;
+      }
+      h=Math.round(h); s=Math.round(s*100); l=Math.round(l*100);
     }
-    h=Math.round(h); s=Math.round(s*100); l=Math.round(l*100);
+    return {h,s,l};
   }
-  return {h,s,l};
-}
 
-// ---------------- 分頁切換 ----------------
-function showPage(newPage){
-  if(currentPage){
-    currentPage.classList.remove("active");
-    currentPage.classList.add("exit-left");
+  // ---------------- 分頁切換 ----------------
+  function showPage(newPage){
+    if(currentPage){
+      currentPage.classList.remove("active");
+      currentPage.classList.add("exit-left");
+    }
+    currentPage = newPage;
+    newPage.classList.remove("exit-left","exit-right");
+    setTimeout(()=> newPage.classList.add("active"),10);
+    app.innerHTML="";
+    app.appendChild(newPage);
   }
-  currentPage = newPage;
-  newPage.classList.remove("exit-left","exit-right");
-  setTimeout(()=> newPage.classList.add("active"),10);
-  app.innerHTML="";
-  app.appendChild(newPage);
-}
 
-// ---------------- Router ----------------
-function router(){
-  const h=location.hash || "#home";
-  if(h==="#home") renderHome();
-  else if(h.startsWith("#palette/")) renderPalette(h.split("/")[1]);
-  else if(h.startsWith("#color/")) renderColor(h.split("/")[1]);
-  else renderHome();
-}
+  // ---------------- Router ----------------
+  function router(){
+    const h=location.hash || "#home";
+    if(h==="#home") renderHome();
+    else if(h.startsWith("#palette/")) renderPalette(h.split("/")[1]);
+    else if(h.startsWith("#color/")) renderColor(h.split("/")[1]);
+    else renderHome();
+  }
 
-// ---------------- Home ----------------
-function renderHome(){
-  const div = document.createElement("div");
-  div.className="page";
-  div.innerHTML = `
-    <h2 style="text-align:center;margin-bottom:30px;">🎨 Nippon Colors Palettes</h2>
-    <div class="grid">
-      ${palettes.map(p=>`
-        <div class="card">
-          <div class="colors" onclick="goPalette('${p.id}')">
-            ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
+  // ---------------- Home ----------------
+  function renderHome(){
+    const div = document.createElement("div");
+    div.className="page";
+    div.innerHTML = `
+      <h2 style="text-align:center;margin-bottom:30px;">🎨 Nippon Colors Palettes</h2>
+      <div class="grid">
+        ${palettes.map(p=>`
+          <div class="card">
+            <div class="colors" onclick="goPalette('${p.id}')">
+              ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
+            </div>
+            <p>${p.name} <span class="heart" onclick="toggleFav('${p.id}',event)">${favorites.includes(p.id)?"❤️":"🤍"}</span></p>
           </div>
-          <p>${p.name} <span class="heart" onclick="toggleFav('${p.id}',event)">${favorites.includes(p.id)?"❤️":"🤍"}</span></p>
-        </div>
-      `).join("")}
-    </div>
-  `;
-  showPage(div);
-}
+        `).join("")}
+      </div>
+    `;
+    showPage(div);
+  }
 
-// ---------------- Palette Page ----------------
-function renderPalette(id){
-  const p = palettes.find(x=>x.id===id);
-  if(!p){ location.hash="#home"; return; }
-  const div = document.createElement("div");
-  div.className="page";
-  div.innerHTML = `
-    <a class="back" href="#home">← Back</a>
-    <div class="palette-full">
-      ${p.colors.map(c=>`<div style="background:${c}" onclick="goColor('${c}')">${c}</div>`).join("")}
-    </div>
-    <h2>UI Preview</h2>
-    <div class="ui-demo">
-      ${p.colors.slice(0,3).map((c,i)=>`
-        <div class="demo-card">
-          <button style="background:${c}" onclick="showColorInfo('${c}')">
-            Button ${i+1}
-          </button>
-        </div>
-      `).join("")}
-    </div>
-    <div id="color-info"></div>
-  `;
-  showPage(div);
-}
+  // ---------------- Palette Page ----------------
+  function renderPalette(id){
+    const p = palettes.find(x=>x.id===id);
+    if(!p){ location.hash="#home"; return; }
+    const div = document.createElement("div");
+    div.className="page";
+    div.innerHTML = `
+      <a class="back" href="#home">← Back</a>
+      <div class="palette-full">
+        ${p.colors.map(c=>`<div style="background:${c}" onclick="goColor('${c}')">${c}</div>`).join("")}
+      </div>
+      <h2>UI Preview</h2>
+      <div class="ui-demo">
+        ${p.colors.slice(0,3).map((c,i)=>`
+          <div class="demo-card">
+            <button style="background:${c}" onclick="showColorInfo('${c}')">
+              Button ${i+1}
+            </button>
+          </div>
+        `).join("")}
+      </div>
+      <div id="color-info"></div>
+    `;
+    showPage(div);
+  }
 
-// ---------------- Color Page ----------------
-function renderColor(hex){
-  const c = hex.startsWith("#") ? hex : "#"+hex;
-  const {r,g,b} = hexToRgb(c);
-  const {h,s,l} = rgbToHsl(r,g,b);
-  const div = document.createElement("div");
-  div.className="page";
-  div.innerHTML = `
-    <a class="back" href="#home">← Back</a>
-    <div class="color-page">
-      <div class="color-box" style="background:${c}">${c}</div>
-      <p><b>HEX:</b> ${c}</p>
+  // ---------------- Color Page ----------------
+  function renderColor(hex){
+    const c = hex.startsWith("#") ? hex : "#"+hex;
+    const {r,g,b} = hexToRgb(c);
+    const {h,s,l} = rgbToHsl(r,g,b);
+    const div = document.createElement("div");
+    div.className="page";
+    div.innerHTML = `
+      <a class="back" href="#home">← Back</a>
+      <div class="color-page">
+        <div class="color-box" style="background:${c}">${c}</div>
+        <p><b>HEX:</b> ${c}</p>
+        <p><b>RGB:</b> rgb(${r},${g},${b})</p>
+        <p><b>HSL:</b> hsl(${h},${s}%,${l}%)</p>
+        <p><b>色環位置:</b> ${h}°</p>
+      </div>
+    `;
+    showPage(div);
+  }
+
+  // ---------------- Actions ----------------
+  function goPalette(id){ location.hash="#palette/"+id; }
+  function goColor(hex){ location.hash="#color/"+hex.replace("#",""); }
+
+  function toggleFav(id,event){
+    event.stopPropagation();
+    favorites = favorites.includes(id)
+      ? favorites.filter(x=>x!==id)
+      : [...favorites,id];
+    localStorage.setItem("fav",JSON.stringify(favorites));
+    renderHome();
+  }
+
+  function showColorInfo(hex){
+    const {r,g,b} = hexToRgb(hex);
+    const {h,s,l} = rgbToHsl(r,g,b);
+    const infoHtml = `
+      <p><b>HEX:</b> ${hex}</p>
       <p><b>RGB:</b> rgb(${r},${g},${b})</p>
       <p><b>HSL:</b> hsl(${h},${s}%,${l}%)</p>
       <p><b>色環位置:</b> ${h}°</p>
-    </div>
-  `;
-  showPage(div);
-}
-
-// ---------------- Actions ----------------
-function goPalette(id){ location.hash="#palette/"+id; }
-function goColor(hex){ location.hash="#color/"+hex.replace("#",""); }
-
-function toggleFav(id,event){
-  event.stopPropagation();
-  favorites = favorites.includes(id)
-    ? favorites.filter(x=>x!==id)
-    : [...favorites,id];
-  localStorage.setItem("fav",JSON.stringify(favorites));
-  renderHome();
-}
-
-// ---------------- 顯示色彩資訊 ----------------
-function showColorInfo(hex){
-  const {r,g,b} = hexToRgb(hex);
-  const {h,s,l} = rgbToHsl(r,g,b);
-  const infoHtml = `
-    <p><b>HEX:</b> ${hex}</p>
-    <p><b>RGB:</b> rgb(${r},${g},${b})</p>
-    <p><b>HSL:</b> hsl(${h},${s}%,${l}%)</p>
-    <p><b>色環位置:</b> ${h}°</p>
-  `;
-  const infoBox = document.getElementById("color-info");
-  if(infoBox){
-    infoBox.innerHTML = infoHtml;
-    infoBox.classList.add("show");
+    `;
+    const infoBox = document.getElementById("color-info");
+    if(infoBox){
+      infoBox.innerHTML = infoHtml;
+      infoBox.classList.add("show");
+    }
   }
-}
 
-window.addEventListener("hashchange",router);
-router();
+  window.addEventListener("hashchange",router);
+  router();
 </script>
   
 </body>
 </html>
-
