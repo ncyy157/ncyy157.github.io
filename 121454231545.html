@@ -230,7 +230,6 @@ const palettes = [
 
 ];
 
-// ------------ 工具函式 -------------
 function hexToRgb(hex) {
   hex = hex.replace("#", "");
   if (hex.length === 3) hex = hex.split("").map(c => c+c).join("");
@@ -281,17 +280,50 @@ function hslToRgb(h,s,l){
   return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
 }
 
-// hsl 轉 hex
 function hslToHex(h,s,l){
   const rgb = hslToRgb(h,s,l);
   return rgbToHex(rgb[0],rgb[1],rgb[2]);
 }
 
+// ------------ 生成色票 -------------
+function randomHSL(style){
+  let h,s,l;
+  switch(style){
+    case "morandi": h=Math.random()*360; s=Math.random()*0.2+0.1; l=Math.random()*0.2+0.5; break;
+    case "pastel": h=Math.random()*360; s=Math.random()*0.4+0.3; l=Math.random()*0.3+0.7; break;
+    case "contrast": h=Math.random()*360; s=Math.random()*0.5+0.5; l=Math.random()*0.4+0.3; break;
+    default: h=Math.random()*360; s=0.5; l=0.5;
+  }
+  return {h,s,l};
+}
+
+function generateHarmoniousPalette(colorsPerPalette=4, style="pastel"){
+  const base = randomHSL(style);
+  const colors = [];
+  for(let j=0;j<colorsPerPalette;j++){
+    const h = (base.h + j*30)%360;
+    colors.push(hslToHex(h, base.s*100, base.l*100));
+  }
+  return {id:`${style}_${Math.floor(Math.random()*100000)}`, name:`${style} palette`, colors, style};
+}
+
+// 生成 1000 組色票，每組 4~5 色
+const palettes = [];
+for(let i=0;i<1000;i++){
+  const numColors = 4 + Math.floor(Math.random()*2); // 4 或 5 色
+  const styleOptions = ["morandi","pastel","contrast"];
+  const style = styleOptions[Math.floor(Math.random()*styleOptions.length)];
+  palettes.push(generateHarmoniousPalette(numColors,style));
+}
+
 // ------------ 渲染頁面 -------------
+const app = document.getElementById("app");
+
 function renderHome(){
+  const showCount = 100; // 首頁只顯示前100組
   app.innerHTML=`
     <div class="grid">
-      ${palettes.map(p=>`
+      ${palettes.slice(0,showCount).map(p=>`
         <div class="card" onclick="goPalette('${p.id}')">
           <div class="colors">
             ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
@@ -328,7 +360,6 @@ function renderColor(hex){
     <div class="color-box" style="background:${c}">${c}</div>
     <p>RGB: (${r}, ${g}, ${b})</p>
     <p>HSL: (${h}, ${s}%, ${l}%)</p>
-    <img src="images.jfif" style="width:180px;margin:20px auto;display:block">
     <div class="related">
       <h3>Related Colors</h3>
       ${Object.entries(related).map(([label,vals])=>`
@@ -340,7 +371,7 @@ function renderColor(hex){
     </div>`;
 }
 
-// ------------ 互動導覽 -------------
+// ------------ 導覽 -------------
 function goPalette(id){ location.hash="#palette/"+id; }
 function goColor(hex){ location.hash="#color/"+hex; }
 
@@ -352,6 +383,7 @@ function router(){
 }
 window.addEventListener("hashchange",router);
 router();
+
 </script>
 </body>
 </html>
