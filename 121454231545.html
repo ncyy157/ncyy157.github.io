@@ -110,13 +110,10 @@ input[type=file]{
 
 <script>
 let palettes = [
-  {
-    id:"warm_clay",
-    name:"Warm Clay",
-    colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"]
-  }
+  { id:"warm_clay", name:"Warm Clay", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] }
 ];
 
+/* ===== 主頁渲染 ===== */
 function renderHome(){
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -133,6 +130,7 @@ function renderHome(){
   `;
 }
 
+/* ===== 單色頁面 ===== */
 function goPalette(id){
   const p = palettes.find(p=>p.id===id);
   document.getElementById("app").innerHTML = `
@@ -146,6 +144,7 @@ function goPalette(id){
   `;
 }
 
+/* ===== 相關色頁面 ===== */
 function goColor(hex){
   renderColor(hex);
 }
@@ -187,51 +186,60 @@ function renderColor(hex){
   `;
 }
 
+/* ===== 圖片生成色票 ===== */
 function handleUpload(event){
   const file = event.target.files[0];
   const img = new Image();
 
   img.onload = () => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 100;
-    canvas.height = 100;
-    ctx.drawImage(img, 0, 0, 100, 100);
-
-    const data = ctx.getImageData(0,0,100,100).data;
-
-    // 取主要顏色：這裡簡單用每隔 4 pixels 取 RGB
-    const colors = [];
-    for(let i=0; i<data.length; i+=16){ // 4px 間隔
-      const r = data[i], g = data[i+1], b = data[i+2];
-      colors.push(rgbToHex(r,g,b));
-    }
-
-    // enriched
-    const enriched = [];
-    colors.forEach(hex=>{
-      const {r,g,b} = hexToRgb(hex);
-      const {h,s,l} = rgbToHsl(r,g,b);
-      enriched.push(
-        hslToHex(h,s,l),
-        hslToHex(h,s*0.7,Math.min(l+0.15,1))
-      );
-    });
-
-    // 推入 palettes
+    const colors = extractColors(img,5); // 取 5 個主要色
     palettes.push({
       id:"img_"+Date.now(),
       name:"Image Palette",
-      colors: enriched.slice(0,5)
+      colors: colors
     });
-
-    // 更新畫面
     renderHome();
   };
 
   img.src = URL.createObjectURL(file);
 }
 
+/* ===== 圖片主色提取 ===== */
+function extractColors(img, count=5){
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = 100;
+  canvas.height = 100;
+  ctx.drawImage(img,0,0,100,100);
+  const data = ctx.getImageData(0,0,100,100).data;
+
+  // 收集像素
+  let pixels = [];
+  for(let i=0;i<data.length;i+=4){
+    const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
+    if(a>128) pixels.push({r,g,b});
+  }
+
+  if(pixels.length===0) return ["#cccccc"]; // 防止空圖
+
+  // 亮度排序
+  pixels.sort((a,b)=>0.2126*a.r+0.7152*a.g+0.0722*a.b - (0.2126*b.r+0.7152*b.g+0.0722*b.b));
+
+  const seg = Math.floor(pixels.length / count);
+  let colors = [];
+  for(let i=0;i<count;i++){
+    const chunk = pixels.slice(i*seg,(i+1)*seg);
+    colors.push(avgColor(chunk));
+  }
+
+  return colors;
+}
+
+function avgColor(arr){
+  const len = arr.length;
+  const sum = arr.reduce((acc,p)=>({r:acc.r+p.r,g:acc.g+p.g,b:acc.b+p.b}),{r:0,g:0,b:0});
+  return rgbToHex(Math.round(sum.r/len), Math.round(sum.g/len), Math.round(sum.b/len));
+}
 
 /* ===== Color Utils ===== */
 function hexToRgb(hex){
@@ -244,8 +252,8 @@ function rgbToHex(r,g,b){
 }
 
 function rgbToHsl(r,g,b){
-  r/=255;g/=255;b/=255;
-  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b);
   let h,s,l=(max+min)/2;
   if(max===min){h=s=0;}
   else{
