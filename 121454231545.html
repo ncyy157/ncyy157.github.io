@@ -5,428 +5,242 @@
   <title>prototype</title>
   <link rel="icon" href="9582013.png">
 
-  <style>
-    body {
-      margin:0;
-      font-family:"Segoe UI",system-ui,sans-serif;
-      background-image:
-        linear-gradient(135deg, rgba(245,247,250,0.5), rgba(195,207,226,0.5)),
-        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      overflow-x: hidden;
-      transition: background 0.3s;
-    }
-    header{
-      background:#ffffffcc;
-      padding:20px;
-      text-align:center;
-      position:sticky; top:0;
-    }
-    main{max-width:1200px;margin:40px auto;padding:0 20px;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;}
-    .card{background:#fff;border-radius:12px;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.08);}
-    .colors{display:flex;height:120px;}
-    .colors div{flex:1;}
-    .palette-full{display:flex;height:260px;border-radius:16px;overflow:hidden;}
-    .palette-full div{flex:1;display:flex;align-items:flex-end;justify-content:center;color:#fff;font-weight:bold;padding:12px;cursor:pointer;}
-    .back{display:inline-block;margin-bottom:16px;text-decoration:none;color:#333;}
-    .color-box{height:200px;border-radius:20px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:bold;margin-bottom:12px;}
-    .related .row{display:flex;gap:12px;margin-bottom:16px;}
-    .swatch{flex:1;padding:12px;color:white;font-weight:bold;border-radius:8px;cursor:pointer;text-align:center;}
-  </style>
+
+<style>
+body{
+  margin:0;
+  font-family:"Segoe UI",system-ui,sans-serif;
+  background:linear-gradient(135deg,#f5f7fa,#c3cfe2);
+}
+
+header{
+  padding:16px;
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+}
+
+main{
+  padding:24px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
+}
+
+.palette{
+  background:#fff;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+
+.palette .colors{
+  display:flex;
+  height:100px;
+}
+
+.palette .colors div{
+  flex:1;
+}
+
+.palette h4{
+  margin:0;
+  padding:12px;
+  font-size:14px;
+  text-align:center;
+}
+
+.swatch{
+  padding:16px;
+  color:#000;
+  border-radius:8px;
+  cursor:pointer;
+  text-align:center;
+  margin:8px 0;
+}
+
+.row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+input[type=file]{
+  margin-top:8px;
+}
+</style>
 </head>
 <body>
-<header><h1>✶Color Palettes✶</h1></header>
+
+<header>
+  <h2>🎨 Color Palette App</h2>
+  <input type="file" accept="image/*" onchange="handleUpload(event)">
+</header>
+
 <main id="app"></main>
 
 <script>
-  // ------------ 工具函式 -------------
-  function hexToRgb(hex) {
-    hex = hex.replace("#", "");
-    if (hex.length === 3) hex = hex.split("").map(c => c+c).join("");
-    const v = parseInt(hex, 16);
-    return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+let palettes = [
+  {
+    id:"warm_clay",
+    name:"Warm Clay",
+    colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"]
   }
-
-  function rgbToHex(r,g,b){
-    return "#" + [r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
-  }
-
-  function rgbToHsl(r,g,b){
-    r/=255; g/=255; b/=255;
-    const max = Math.max(r,g,b), min = Math.min(r,g,b);
-    let h,s,l = (max+min)/2;
-    if(max===min){h=s=0;}
-    else {
-      const d = max-min;
-      s = l>0.5 ? d/(2-max-min) : d/(max+min);
-      switch(max){
-        case r: h = (g-b)/d + (g<b?6:0); break;
-        case g: h = (b-r)/d + 2; break;
-        case b: h = (r-g)/d + 4; break;
-      }
-      h /= 6;
-    }
-    return [Math.round(h*360), Math.round(s*100), Math.round(l*100)];
-  }
-
-  function hslToRgb(h,s,l){
-    s/=100; l/=100; h/=360;
-    let r,g,b;
-    if(s===0){r=g=b=l;}
-    else {
-      const hue2rgb = (p,q,t) => {
-        if(t<0) t+=1; if(t>1) t-=1;
-        if(t<1/6) return p + (q-p)*6*t;
-        if(t<1/2) return q;
-        if(t<2/3) return p + (q-p)*(2/3-t)*6;
-        return p;
-      };
-      const q = l<0.5? l*(1+s) : l+s-l*s;
-      const p = 2*l - q;
-      r = hue2rgb(p,q,h+1/3);
-      g = hue2rgb(p,q,h);
-      b = hue2rgb(p,q,h-1/3);
-    }
-    return [Math.round(r*255),Math.round(g*255),Math.round(b*255)];
-  }
-
-  function hslToHex(h,s,l){
-    const rgb = hslToRgb(h,s,l);
-    return rgbToHex(rgb[0],rgb[1],rgb[2]);
-  }
-
-  // ------------ 手動色票 (示範簡化) -------------
-  const manualPalettes = [
-  { id:"ocean_breeze_1", name:"Ocean Breeze", colors:["#1E4F66","#70A9A1","#C9E4CA","#F0F4F8"] },
-  { id:"sunset_glow_1", name:"Sunset Glow", colors:["#FF6F61","#FFA77F","#FFD6A5","#FFF3E0"] },
-  { id:"lavender_dream_1", name:"Lavender Dream", colors:["#7B5E99","#B39BC8","#E6D8F2","#FAF5FF"] },
-  { id:"mint_frost_1", name:"Mint Frost", colors:["#4CB5AE","#A7D7C5","#E0F2F1","#F9FFFC"] },
-  { id:"autumn_maple_1", name:"Autumn Maple", colors:["#A63D40","#E07B7B","#F4C7AB","#FFF1E6"] },
-  { id:"peach_blush_1", name:"Peach Blush", colors:["#F5A6A1","#FCD5CE","#FFF1E6","#FFF9F5"] },
-  { id:"stormy_sky_1", name:"Stormy Sky", colors:["#2E3C54","#6B7B8C","#B0C4D1","#E6EBF2"] },
-  { id:"sunny_meadow_1", name:"Sunny Meadow", colors:["#7BB662","#B8D8A7","#E6F4D9","#F9FFF1"] },
-  { id:"coral_tide_1", name:"Coral Tide", colors:["#FF7660","#FFB196","#FFE3D0","#FFF7F2"] },
-  { id:"twilight_purple_1", name:"Twilight Purple", colors:["#4B3F72","#8C79A0","#C8B8D8","#F4F0F8"] },
-  { id:"autumn_rain_1", name:"Autumn Rain", colors:["#486A8A","#B0C4D1","#F5E1D0","#F7BFAF"] },
-  { id:"coral_sky_1", name:"Coral Sky", colors:["#FF7F6E","#FFC4A3","#D0E6F1","#A3C1D9"] },
-  { id:"twilight_lilac_1", name:"Twilight Lilac", colors:["#6B5B95","#D6C1E1","#FFE3B3","#FFB380"] },
-  { id:"mint_peach_1", name:"Mint Peach", colors:["#50B2A2","#A0E3D6","#FFD7B5","#FF9E80"] },
-  { id:"sunset_reef_1", name:"Sunset Reef", colors:["#FF6F61","#FFA77F","#80BBD0","#3C7A91"] },
-  { id:"lavender_sunset_1", name:"Lavender Sunset", colors:["#8E7CC3","#D3C0EB","#FFD5A5","#FF8C61"] },
-  { id:"frosted_tangerine_1", name:"Frosted Tangerine", colors:["#F5B971","#FFD7AA","#A3D2E2","#467599"] },
-  { id:"peach_fog_1", name:"Peach Fog", colors:["#F6A5A2","#FFD6C0","#B0D0E8","#557A95"] },
-  { id:"cerulean_coral_1", name:"Cerulean Coral", colors:["#3A7CA5","#A1C6EA","#FFD8B1","#FF8C61"] },
-  { id:"sage_sunset_1", name:"Sage Sunset", colors:["#7B9E87","#C6DABF","#FFD8A9","#FF9472"] },
-  { id:"misty_melon_1", name:"Misty Melon", colors:["#FFA07A","#FFD2B2","#8EC5FC","#5A7D9A"] },
-  { id:"indigo_peach_1", name:"Indigo Peach", colors:["#4B3F72","#A592D6","#FFCAA5","#FF8A61"] },
-  { id:"aqua_apricot_1", name:"Aqua Apricot", colors:["#50C9CE","#A6E3E9","#FFD3B6","#FF8B6A"] },
-  { id:"rose_fjord_1", name:"Rose Fjord", colors:["#C94C4C","#F2B5A0","#7DB7C9","#3E6682"] },
-  { id:"lavender_peach_1", name:"Lavender Peach", colors:["#967BB6","#D3C1E5","#FFCAA5","#FF8C61"] },
-  { id:"mint_sunset_1", name:"Mint Sunset", colors:["#64C2A6","#A3E0D8","#FFB788","#FF7A5C"] },
-  { id:"cobalt_apricot_1", name:"Cobalt Apricot", colors:["#3B5BA3","#91BCE0","#FFD1A5","#FF8C61"] },
-  { id:"stormy_peach_1", name:"Stormy Peach", colors:["#556270","#778CA3","#FFB78F","#FF8C61"] },
-  { id:"peach_mist_1", name:"Peach Mist", colors:["#FF9E80","#FFD7B5","#80BBD0","#3C7A91"] },
-  { id:"tangerine_frost_1", name:"Tangerine Frost", colors:["#FF914D","#FFD6AA","#8EC5FC","#5A7D9A"] },
-  { id:"blue_peach_1", name:"Blue Peach", colors:["#3D5C8A","#9DBCD6","#FFD1A5","#FF8C61"] },
-  { id:"lavender_mint_1", name:"Lavender Mint", colors:["#8E7CC3","#D3C0EB","#50B2A2","#A0E3D6"] },
-  { id:"sunset_mint_1", name:"Sunset Mint", colors:["#FF6F61","#FFA77F","#50B2A2","#A0E3D6"] },
-  { id:"peach_fjord_1", name:"Peach Fjord", colors:["#FF8C61","#FFD1A5","#3A7CA5","#A1C6EA"] },
-  { id:"coral_mist_1", name:"Coral Mist", colors:["#FF7660","#FFC4A3","#7EB7E4","#CCD9E8"] },
-  { id:"sage_coral_1", name:"Sage Coral", colors:["#7B9E87","#C6DABF","#FF7F6E","#FFA77F"] },
-  { id:"mint_coral_1", name:"Mint Coral", colors:["#50B2A2","#A0E3D6","#FF6F61","#FFA77F"] },
-  { id:"sunset_lilac_1", name:"Sunset Lilac", colors:["#FF7F6E","#FFA77F","#8E7CC3","#D3C0EB"] },
-  { id:"peach_lilac_1", name:"Peach Lilac", colors:["#FFCAA5","#FF8C61","#967BB6","#D3C1E5"] },
-  { id:"frosted_coral_1", name:"Frosted Coral", colors:["#FFD1A5","#FF8C61","#3A7CA5","#A1C6EA"] },
-  { id:"aqua_sunset_1", name:"Aqua Sunset", colors:["#50C9CE","#A6E3E9","#FF6F61","#FFA77F"] },
-  { id:"lavender_fjord_1", name:"Lavender Fjord", colors:["#967BB6","#D3C1E5","#3A7CA5","#A1C6EA"] },
-  { id:"misty_sage", name:"Misty Sage", colors:["#6F8F7A","#A9C2B0","#EEF3EF"] },
-  { id:"dusty_rose_v1", name:"Dusty Rose", colors:["#B46A78","#E1B7C0","#F7ECEE"] },
-  { id:"ocean_fog", name:"Ocean Fog", colors:["#4E7C8A","#9EC3CC","#F1F6F7"] },
-  { id:"warm_clay_v1", name:"Warm Clay", colors:["#B56B4D","#E0B8A3","#F6EFEA"] },
-  { id:"soft_lavender", name:"Soft Lavender", colors:["#7B6C9E","#B8AED3","#F2F0F8"] },
-
-  { id:"pale_mint", name:"Pale Mint", colors:["#5FAF9A","#A8D9C8","#F0FAF7"] },
-  { id:"evening_sky", name:"Evening Sky", colors:["#4A5D73","#8FA6C1","#EEF2F6"] },
-  { id:"sandstone", name:"Sandstone", colors:["#C1A26E","#E6D4AD","#FBF7EF"] },
-  { id:"berry_milk", name:"Berry Milk", colors:["#8A4C6A","#D3A4B8","#F7EEF2"] },
-  { id:"cool_denim", name:"Cool Denim", colors:["#3E5F8A","#8FAED6","#F1F4F8"] },
-
-  { id:"peach_haze", name:"Peach Haze", colors:["#E58F7C","#F2C3B6","#FFF1ED"] },
-  { id:"forest_mist", name:"Forest Mist", colors:["#4E6B5C","#8FB1A1","#EEF4F1"] },
-  { id:"soft_sky", name:"Soft Sky", colors:["#7AAED6","#BFD9ED","#F4F8FB"] },
-  { id:"coffee_cream", name:"Coffee Cream", colors:["#7A5C4B","#C6B1A4","#F5F0ED"] },
-  { id:"muted_plum", name:"Muted Plum", colors:["#6A4C6F","#B29BB6","#F3EFF5"] },
-
-  { id:"sea_glass", name:"Sea Glass", colors:["#5BA6A0","#A7D4CF","#F0FAF9"] },
-  { id:"sun_fade", name:"Sun Fade", colors:["#E3A857","#F1D3A2","#FFF7EB"] },
-  { id:"ash_blue", name:"Ash Blue", colors:["#5A6F82","#9FB2C4","#F0F4F7"] },
-  { id:"rose_sand", name:"Rose Sand", colors:["#C47A7A","#E6BABA","#FBF1F1"] },
-  { id:"olive_milk", name:"Olive Milk", colors:["#7D8453","#C2C7A3","#F5F6EE"] },
-
-    { id:"morandi_pearl", name:"Morandi Pearl", colors:["#8B9A91","#BFC7C2","#F0F1EE"] },
-  { id:"morandi_dusk", name:"Morandi Dusk", colors:["#6E7A8C","#AAB2BF","#ECEFF2"] },
-  { id:"morandi_sandstone", name:"Morandi Sandstone", colors:["#B08C7E","#E1CFC3","#F9F6F2"] },
-  { id:"morandi_fog", name:"Morandi Fog", colors:["#7A7E82","#B0B3B5","#EFF1F2"] },
-  { id:"morandi_moss", name:"Morandi Moss", colors:["#7C8572","#B7C0AD","#EFF2EC"] },
-  { id:"morandi_plum", name:"Morandi Plum", colors:["#6B5C72","#B8AFC2","#F0EDF4"] },
-  { id:"morandi_teal", name:"Morandi Teal", colors:["#4F7C7B","#9FC1BF","#EEF5F4"] },
-  { id:"morandi_taupe", name:"Morandi Taupe", colors:["#7E6E65","#C2B5AD","#F3F0ED"] },
-  { id:"morandi_lavender", name:"Morandi Lavender", colors:["#8B7DA5","#CFC2DD","#F5F3F9"] },
-  { id:"morandi_mint", name:"Morandi Mint", colors:["#6F8F8A","#AFC7C2","#EEF5F3"] },
-  
-  { id:"pastel_peach", name:"Pastel Peach", colors:["#FFB9A5","#FFD9CC","#FFF4F2"] },
-  { id:"pastel_sky", name:"Pastel Sky", colors:["#A7D0F2","#D6EBFB","#F5FAFF"] },
-  { id:"pastel_lavender", name:"Pastel Lavender", colors:["#C3B7E3","#E6E0F4","#F9F7FD"] },
-  { id:"pastel_mint", name:"Pastel Mint", colors:["#9FE2C4","#D4F4E7","#F3FCF8"] },
-  { id:"pastel_lemon", name:"Pastel Lemon", colors:["#FFF17A","#FFF8BC","#FFFBED"] },
-  { id:"pastel_rose", name:"Pastel Rose", colors:["#F7A9C5","#FCD6E3","#FFF4F8"] },
-  { id:"pastel_aqua", name:"Pastel Aqua", colors:["#9AE0E3","#D3F3F5","#F3FCFD"] },
-  { id:"pastel_grape", name:"Pastel Grape", colors:["#B8A3D7","#E1D7F2","#F8F6FD"] },
-  { id:"pastel_coral", name:"Pastel Coral", colors:["#FF9F90","#FFD1CA","#FFF1EF"] },
-  { id:"pastel_bluegray", name:"Pastel Blue Gray", colors:["#B6C4D6","#E2EBF1","#F7FAFD"] },
-  { id:"pastel_apple", name:"Pastel Apple", colors:["#BAE7A2","#E4F6D9","#F6FDF2"] },
-  { id:"pastel_milkcoffee", name:"Pastel Milk Coffee", colors:["#D3B8A3","#F0E1D6","#FBF7F3"] },
-  { id:"pastel_blush", name:"Pastel Blush", colors:["#F4B2B9","#F9D7DB","#FFF4F5"] },
-  { id:"pastel_cloud", name:"Pastel Cloud", colors:["#D4DAE2","#EDF0F4","#FAFBFD"] },
-  
-  { id:"contrast_blue_orange", name:"Blue Orange", colors:["#1F3C88","#F38C28","#F4F6FA"] },
-  { id:"contrast_purple_yellow", name:"Purple Yellow", colors:["#4B2E83","#FFD547","#F7F4FC"] },
-  { id:"contrast_teal_coral", name:"Teal Coral", colors:["#00706F","#FF6F61","#F2FAFA"] },
-  { id:"contrast_red_black", name:"Red Black", colors:["#9C1C1C","#1F1F1F","#F5F5F5"] },
-  { id:"contrast_navy_lime", name:"Navy Lime", colors:["#102B43","#9FE970","#F3F9F1"] },
-  { id:"contrast_indigo_gold", name:"Indigo Gold", colors:["#2D1B69","#E6B550","#FBF7EE"] },
-  { id:"contrast_forest_pink", name:"Forest Pink", colors:["#124834","#F2A1B4","#F4FAF7"] },
-  { id:"contrast_black_cyan", name:"Black Cyan", colors:["#0F172A","#22D3EE","#F0FDFF"] },
-  { id:"contrast_burgundy_mint", name:"Burgundy Mint", colors:["#6D1E2D","#7FE0C3","#F3FBF8"] },
-  { id:"contrast_royal_orange", name:"Royal Orange", colors:["#2A2F8F","#FF8B00","#F4F5FB"] },
-  { id:"contrast_charcoal_yellow", name:"Charcoal Yellow", colors:["#2B2E34","#FFD94E","#FAFAF0"] },
-  { id:"contrast_emerald_violet", name:"Emerald Violet", colors:["#0B7B75","#7C3AED","#F4F1FB"] },
-  { id:"contrast_cobalt_pink", name:"Cobalt Pink", colors:["#0048AB","#FF5EA3","#F5F3FA"] },
-  { id:"contrast_dark_sand", name:"Dark Sand", colors:["#3A3A3A","#D6B98D","#F4F1EC"] },
-  
-  { id:"morandi_peach", name:"Morandi Peach", colors:["#C18E8E","#E6C9C5","#F9F6F4"] },
-  { id:"morandi_iceblue", name:"Morandi Ice Blue", colors:["#7C8D9C","#B5C3CF","#EFF4F7"] },
-  { id:"pastel_sunrise", name:"Pastel Sunrise", colors:["#FFCCC1","#FFE5DE","#FFF8F7"] },
-  { id:"pastel_ocean", name:"Pastel Ocean", colors:["#A6DFF0","#D7F3FA","#F5FCFF"] },
-  { id:"contrast_magenta_cyan", name:"Magenta Cyan", colors:["#D6007E","#00BCD4","#F7F6FA"] },
-  { id:"contrast_orange_green", name:"Orange Green", colors:["#FF7A00","#00C271","#F9FAF2"] },
-  { id:"morandi_linen", name:"Morandi Linen", colors:["#A6988C","#DED6C8","#F9F7F2"] },
-  { id:"pastel_lilac", name:"Pastel Lilac", colors:["#D3C4E7","#F1ECFA","#FEF9FF"] },
-  { id:"contrast_teal_pink", name:"Teal Pink", colors:["#008080","#FF6B8A","#F4FBFB"] },
-  { id:"morandi_caramel", name:"Morandi Caramel", colors:["#A68463","#DCC9B0","#F8F4ED"] },
-  { id:"pastel_sage", name:"Pastel Sage", colors:["#C0E0C0","#E6F3E6","#F7FCF7"] },
-  { id:"contrast_blue_red", name:"Blue Red", colors:["#1E3F88","#E63946","#F4F5FA"] },
-  { id:"pastel_citrine", name:"Pastel Citrine", colors:["#FFF3A1","#FFFBE3","#FFFEF6"] },
-  { id:"morandi_sapphire", name:"Morandi Sapphire", colors:["#506F8B","#AFC0D2","#EEF4F8"] },
-  { id:"contrast_purple_coral", name:"Purple Coral", colors:["#6B3E9B","#FF6B61","#F5F3FB"] },
-
-
-  { id:"cloud_lilac", name:"Cloud Lilac", colors:["#8E86A8","#C9C4DB","#F5F4F9"] },
-  { id:"deep_teal_soft", name:"Deep Teal Soft", colors:["#3F7C7A","#8FC1BF","#EEF7F7"] },
-  { id:"maple_cream", name:"Maple Cream", colors:["#B07A4A","#E2C2A5","#FBF3ED"] },
-  { id:"cool_blush", name:"Cool Blush", colors:["#C07C9A","#E6B7CB","#FAF1F5"] },
-  { id:"morning_fog", name:"Morning Fog", colors:["#6E7F8D","#B2C0CB","#F2F5F7"] },
-
-  { id:"soft_coral", name:"Soft Coral", colors:["#E07A6F","#F2B7AE","#FFF0EE"] },
-  { id:"pine_mist", name:"Pine Mist", colors:["#3F6B5B","#86AFA1","#EEF4F2"] },
-  { id:"butter_sky", name:"Butter Sky", colors:["#F0C94A","#F6E2A3","#FFFAEC"] },
-  { id:"stone_blue", name:"Stone Blue", colors:["#546A7B","#9FB0BF","#F1F4F6"] },
-  { id:"lavender_milk", name:"Lavender Milk", colors:["#9A8CB4","#CEC7DD","#F7F5FA"] },
-
-  { id:"warm_taupe", name:"Warm Taupe", colors:["#8A7665","#C6B8AD","#F4F1EE"] },
-  { id:"aqua_breeze", name:"Aqua Breeze", colors:["#5FB7C4","#A9DEE6","#F1FBFC"] },
-  { id:"soft_wine", name:"Soft Wine", colors:["#7A3F52","#C89AA8","#F5EDF0"] },
-  { id:"lemon_milk", name:"Lemon Milk", colors:["#E6C84F","#F3E3A3","#FFFBEC"] },
-  { id:"cool_slate", name:"Cool Slate", colors:["#5A6470","#A5AEB8","#F1F3F5"] },
-
-  { id:"morandi_sage", name:"Morandi Sage", colors:["#7A8F84","#AEBDB4","#EFEFEA"] },
-  { id:"morandi_blue", name:"Morandi Blue", colors:["#5F6F82","#9FAEBF","#ECEFF2"] },
-  { id:"morandi_clay", name:"Morandi Clay", colors:["#8B6F5C","#C5B1A4","#F1ECE8"] },
-  { id:"morandi_rose", name:"Morandi Rose", colors:["#9A6F78","#CDB1B7","#F3ECEE"] },
-  { id:"morandi_olive", name:"Morandi Olive", colors:["#7C825F","#B9BE9A","#F2F3EB"] },
-
-  { id:"morandi_plum", name:"Morandi Plum", colors:["#6E5A6F","#AFA0B1","#EFECEF"] },
-  { id:"morandi_teal", name:"Morandi Teal", colors:["#4F6F6B","#9FB9B5","#EDF3F2"] },
-  { id:"morandi_sand", name:"Morandi Sand", colors:["#B59A7A","#E0D0B8","#F8F4EE"] },
-  { id:"morandi_denim", name:"Morandi Denim", colors:["#4E6073","#91A2B3","#EEF2F5"] },
-  { id:"morandi_taupe", name:"Morandi Taupe", colors:["#7F7168","#C1B5AD","#F3F0ED"] },
-
-  { id:"morandi_mint", name:"Morandi Mint", colors:["#6F8F8A","#AFC7C2","#EEF5F3"] },
-  { id:"morandi_lilac", name:"Morandi Lilac", colors:["#8A819C","#C4BED2","#F4F3F8"] },
-  { id:"morandi_grayblue", name:"Morandi Gray Blue", colors:["#606D7B","#A6B0BC","#F1F3F6"] },
-  { id:"morandi_brown", name:"Morandi Brown", colors:["#6F5B4D","#B7A99D","#EFEAE6"] },
-
-  { id:"pastel_peach", name:"Pastel Peach", colors:["#FFB7A5","#FFD6CC","#FFF4F1"] },
-  { id:"pastel_sky", name:"Pastel Sky", colors:["#A7CFF2","#D6E9FB","#F5FAFF"] },
-  { id:"pastel_lavender", name:"Pastel Lavender", colors:["#C2B7E2","#E5E0F3","#F9F7FD"] },
-  { id:"pastel_mint", name:"Pastel Mint", colors:["#9FE0C3","#D4F3E6","#F3FCF8"] },
-  { id:"pastel_lemon", name:"Pastel Lemon", colors:["#FFE27A","#FFF1BC","#FFFBEA"] },
-
-  { id:"pastel_rose", name:"Pastel Rose", colors:["#F6A9C4","#FBD6E3","#FFF4F8"] },
-  { id:"pastel_aqua", name:"Pastel Aqua", colors:["#9ADFE3","#D3F2F4","#F3FCFD"] },
-  { id:"pastel_grape", name:"Pastel Grape", colors:["#B7A3D6","#E0D7F1","#F8F6FD"] },
-  { id:"pastel_coral", name:"Pastel Coral", colors:["#FF9E8F","#FFD0C9","#FFF1EE"] },
-  { id:"pastel_bluegray", name:"Pastel Blue Gray", colors:["#B5C4D6","#E1E9F1","#F7FAFD"] },
-
-  { id:"pastel_apple", name:"Pastel Apple", colors:["#B9E7A1","#E3F6D8","#F6FDF2"] },
-  { id:"pastel_milkcoffee", name:"Pastel Milk Coffee", colors:["#D2B8A3","#EFE1D6","#FBF7F3"] },
-  { id:"pastel_blush", name:"Pastel Blush", colors:["#F3B1B8","#F9D6DA","#FFF4F5"] },
-  { id:"pastel_cloud", name:"Pastel Cloud", colors:["#D3DAE2","#EDF0F4","#FAFBFD"] },
-  { id:"contrast_blue_orange", name:"Blue Orange", colors:["#1F3C88","#F28C28","#F4F6FA"] },
-
-  { id:"contrast_purple_yellow", name:"Purple Yellow", colors:["#4B2E83","#FFD447","#F7F4FC"] },
-  { id:"contrast_teal_coral", name:"Teal Coral", colors:["#006D6F","#FF6F61","#F2FAFA"] },
-  { id:"contrast_red_black", name:"Red Black", colors:["#9B1C1C","#1F1F1F","#F5F5F5"] },
-  { id:"contrast_navy_lime", name:"Navy Lime", colors:["#102A43","#9FE870","#F3F9F1"] },
-  { id:"contrast_indigo_gold", name:"Indigo Gold", colors:["#2D1B69","#E6B450","#FBF7EE"] },
-
-  { id:"contrast_forest_pink", name:"Forest Pink", colors:["#124734","#F2A1B3","#F4FAF7"] },
-  { id:"contrast_black_cyan", name:"Black Cyan", colors:["#0F172A","#22D3EE","#F0FDFF"] },
-  { id:"contrast_burgundy_mint", name:"Burgundy Mint", colors:["#6D1E2C","#7FE0C3","#F3FBF8"] },
-  { id:"contrast_royal_orange", name:"Royal Orange", colors:["#2A2F8F","#FF8A00","#F4F5FB"] },
-  { id:"contrast_charcoal_yellow", name:"Charcoal Yellow", colors:["#2B2E34","#FFD84D","#FAFAF0"] },
-
-  { id:"contrast_emerald_violet", name:"Emerald Violet", colors:["#0B7A75","#7C3AED","#F4F1FB"] },
-  { id:"contrast_cobalt_pink", name:"Cobalt Pink", colors:["#0047AB","#FF5DA2","#F5F3FA"] },
-  { id:"contrast_dark_sand", name:"Dark Sand", colors:["#3A3A3A","#D6B98C","#F4F1EC"] },
-
-  { id:"steel_blue", name:"Steel Blue", colors:["#3D5C8A","#9DBCD6","#F0F1F2","#F3B092"] },
-  { id:"soft_apricot", name:"Soft Apricot", colors:["#F9CD2C","#EDC491","#F5DFD6","#FCF8F6"] },
-  { id:"sky_mist", name:"Sky Mist", colors:["#7EB7E4","#CCD9E8","#C4AFB0","#F5F7F9"] },
-  { id:"olive_garden", name:"Olive Garden", colors:["#496128","#59751E","#9DA483","#F7EDE9"] },
-  { id:"warm_clay_v2", name:"Warm Clay v2", colors:["#EA825D","#EAA285","#F3D1C2","#FAF6F4"] },
-
-  { id:"golden_light", name:"Golden Light", colors:["#F3BE42","#F8D87D","#FAEABA","#FBFAF3"] },
-  { id:"dusty_rose_v2", name:"Dusty Rose v2", colors:["#714745","#B17E81","#E0B8B7","#F9F5F5"] },
-  { id:"stone_gray", name:"Stone Gray", colors:["#2F2F2F","#6B6B6B","#B6B6B6","#F2F2F2"] },
-  { id:"lavender_gray", name:"Lavender Gray", colors:["#7C717A","#A38E93","#D1BBC0","#F9F7F8"] },
-  { id:"mist_blue", name:"Mist Blue", colors:["#6FA8B8","#9FC6CF","#CFE2E6","#F2F7F8"] },
-
-  { id:"deep_teal", name:"Deep Teal", colors:["#0E3F44","#1F6A70","#6FB3B8","#DCEEEF"] },
-  { id:"ice_blue", name:"Ice Blue", colors:["#7EB7E4","#B9D8EC","#E4F0F7","#F7FBFD"] },
-  { id:"moss_dark", name:"Moss Dark", colors:["#1F2E23","#4A5E49","#8E9E8B","#ECEFEA"] },
-  { id:"sage_soft", name:"Sage Soft", colors:["#6E7F73","#9FB0A3","#CBD7CE","#F3F6F4"] },
-  { id:"warm_gray", name:"Warm Gray", colors:["#4E4744","#8B827C","#CFC7C3","#F7F4F2"] },
-
-  { id:"lavender_mute", name:"Lavender Mute", colors:["#6E6A7E","#9A96AD","#C9C6D8","#F5F4FA"] },
-  { id:"violet_dust", name:"Violet Dust", colors:["#7B5A6A","#A88597","#D2BAC6","#F8F2F5"] },
-  { id:"rose_powder", name:"Rose Powder", colors:["#A55B5E","#D39A9C","#EBC7C8","#FBF3F3"] },
-  { id:"blush_light", name:"Blush Light", colors:["#E58A8A","#F1B6B6","#F7DADA","#FDF6F6"] },
-  { id:"clay_earth", name:"Clay Earth", colors:["#5A4036","#9B7768","#D4B6AA","#F6EFEA"] },
-
-  { id:"moss_field", name:"Moss Field", colors:["#496128","#9BAC73","#C8D0B6","#F5F6F2"] },
-  { id:"soft_lilac", name:"Soft Lilac", colors:["#7C717A","#BB93B9","#D2BADC","#F9F4F8"] }
- 
 ];
 
-
-  // ------------ 自動生成色票 -------------
-  function randomHSL(style){
-    let h,s,l;
-    switch(style){
-      case "morandi": h=Math.random()*360; s=Math.random()*0.2+0.1; l=Math.random()*0.2+0.5; break;
-      case "pastel": h=Math.random()*360; s=Math.random()*0.4+0.3; l=Math.random()*0.3+0.7; break;
-      case "contrast": h=Math.random()*360; s=Math.random()*0.5+0.5; l=Math.random()*0.4+0.3; break;
-      default: h=Math.random()*360; s=0.5; l=0.5;
-    }
-    return {h,s,l};
-  }
-
-  function generateHarmoniousPalette(colorsPerPalette=4, style="pastel"){
-    const base = randomHSL(style);
-    const colors = [];
-    for(let j=0;j<colorsPerPalette;j++){
-      const h = (base.h + j*30)%360;
-      colors.push(hslToHex(h, base.s*100, base.l*100));
-    }
-    return {id:`${style}_${Math.floor(Math.random()*100000)}`, name:`${style} palette`, colors, style};
-  }
-
-  const generatedPalettes = [];
-  for(let i=0;i<100;i++){ // 減少生成數量避免卡頓
-    const numColors = 4 + Math.floor(Math.random()*2);
-    const styleOptions = ["morandi","pastel","contrast"];
-    const style = styleOptions[Math.floor(Math.random()*styleOptions.length)];
-    generatedPalettes.push(generateHarmoniousPalette(numColors,style));
-  }
-
-  const palettes = manualPalettes.concat(generatedPalettes);
-
-  // ------------ 渲染頁面 -------------
+function renderHome(){
   const app = document.getElementById("app");
+  app.innerHTML = `
+    <div class="grid">
+      ${palettes.map(p=>`
+        <div class="palette" onclick="goPalette('${p.id}')">
+          <div class="colors">
+            ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
+          </div>
+          <h4>${p.name}</h4>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
 
-  function renderHome(){
-    const showCount = 100;
-    app.innerHTML=`
-      <div class="grid">
-        ${palettes.slice(0,showCount).map(p=>`
-          <div class="card" onclick="goPalette('${p.id}')">
-            <div class="colors">
-              ${p.colors.map(c=>`<div style="background:${c}"></div>`).join("")}
-            </div>
-            <p>${p.name}</p>
+function goPalette(id){
+  const p = palettes.find(p=>p.id===id);
+  document.getElementById("app").innerHTML = `
+    <h3>${p.name}</h3>
+    ${p.colors.map(c=>`
+      <div class="swatch" style="background:${c}" onclick="goColor('${c}')">
+        ${c}
+      </div>
+    `).join("")}
+    <button onclick="renderHome()">← Back</button>
+  `;
+}
+
+function goColor(hex){
+  renderColor(hex);
+}
+
+function renderColor(hex){
+  document.body.style.background = hex;
+  const {r,g,b} = hexToRgb(hex);
+  const {h,s,l} = rgbToHsl(r,g,b);
+
+  const related = {
+    analogous:[
+      hslToHex((h+330)%360,s,l),
+      hslToHex((h+30)%360,s,l)
+    ],
+    complementary:[hslToHex((h+180)%360,s,l)],
+    triadic:[
+      hslToHex((h+120)%360,s,l),
+      hslToHex((h+240)%360,s,l)
+    ]
+  };
+
+  document.getElementById("app").innerHTML = `
+    <h3>${hex}</h3>
+
+    <h4>Related Colors</h4>
+
+    ${Object.entries(related).map(([k,arr])=>`
+      <p>${k}</p>
+      <div class="row">
+        ${arr.map(c=>`
+          <div class="swatch" style="background:${c}" onclick="goColor('${c}')">
+            ${c}
           </div>
         `).join("")}
-      </div>`;
+      </div>
+    `).join("")}
+
+    <button onclick="renderHome()">← Back</button>
+  `;
+}
+
+/* ===== 圖片上傳 → 產生色票 ===== */
+function handleUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const img = new Image();
+  img.onload = ()=>{
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = canvas.height = 100;
+    ctx.drawImage(img,0,0,100,100);
+
+    const data = ctx.getImageData(0,0,100,100).data;
+    const map = {};
+
+    for(let i=0;i<data.length;i+=4){
+      const hex = rgbToHex(data[i],data[i+1],data[i+2]);
+      map[hex]=(map[hex]||0)+1;
+    }
+
+    const colors = Object.entries(map)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,5)
+      .map(e=>e[0]);
+
+    palettes.push({
+      id:"img_"+Date.now(),
+      name:"Image Palette",
+      colors
+    });
+
+    renderHome();
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+/* ===== Color Utils ===== */
+function hexToRgb(hex){
+  const v=parseInt(hex.slice(1),16);
+  return {r:(v>>16)&255,g:(v>>8)&255,b:v&255};
+}
+
+function rgbToHex(r,g,b){
+  return "#"+[r,g,b].map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+
+function rgbToHsl(r,g,b){
+  r/=255;g/=255;b/=255;
+  const max=Math.max(r,g,b),min=Math.min(r,g,b);
+  let h,s,l=(max+min)/2;
+  if(max===min){h=s=0;}
+  else{
+    const d=max-min;
+    s=l>0.5?d/(2-max-min):d/(max+min);
+    switch(max){
+      case r:h=(g-b)/d+(g<b?6:0);break;
+      case g:h=(b-r)/d+2;break;
+      case b:h=(r-g)/d+4;break;
+    }
+    h*=60;
   }
+  return {h,s,l};
+}
 
-  function renderPalette(id){
-    const p = palettes.find(x=>x.id===id);
-    if(!p){ renderHome(); return; }
-    app.innerHTML=`
-      <a class="back" href="#home">← Back</a>
-      <div class="palette-full">
-        ${p.colors.map(c=>`<div style="background:${c}" onclick="goColor('${c.replace("#","")}')">${c}</div>`).join("")}
-      </div>`;
-  }
+function hslToHex(h,s,l){
+  const f=n=>{
+    const k=(n+h/30)%12;
+    const a=s*Math.min(l,1-l);
+    return l-a*Math.max(-1,Math.min(k-3,9-k,1));
+  };
+  return rgbToHex(
+    Math.round(f(0)*255),
+    Math.round(f(8)*255),
+    Math.round(f(4)*255)
+  );
+}
 
-  function renderColor(hex){
-    const c = "#" + hex;
-    document.body.style.background = `
-      linear-gradient(135deg, rgba(245,247,250,0.5), rgba(195,207,226,0.5)),
-      url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1950&q=80')`;
-    const [r,g,b] = hexToRgb(c);
-    const [h,s,l] = rgbToHsl(r,g,b);
-    const related = {
-      analogous: [hslToHex((h+30)%360,s,l), hslToHex((h+330)%360,s,l)],
-      complementary: [hslToHex((h+180)%360,s,l)],
-      triadic: [hslToHex((h+120)%360,s,l), hslToHex((h+240)%360,s,l)]
-    };
-
-    app.innerHTML=`
-      <a class="back" href="#home">← Back</a>
-      <div class="color-box" style="background:${c}">${c}</div>
-      <p>RGB: (${r}, ${g}, ${b})</p>
-      <p>HSL: (${h}, ${s}%, ${l}%)</p>
-      <div class="related">
-        <h3>Related Colors</h3>
-        ${Object.entries(related).map(([label,vals])=>`
-          <p>${label}</p>
-          <div class="row">
-            ${vals.map(col=>`<div class="swatch" style="background:${col}" onclick="goColor('${col.replace("#","")}')">${col}</div>`).join("")}
-          </div>
-        `).join("")}
-      </div>`;
-  }
-
-  // ------------ 導覽 -------------
-  function goPalette(id){ location.hash="#palette/"+id; }
-  function goColor(hex){ location.hash="#color/"+hex; }
-
-  function router(){
-    const h = location.hash || "#home";
-    if(h === "#home") renderHome();
-    else if(h.startsWith("#palette/")) renderPalette(h.split("/")[1]);
-    else if(h.startsWith("#color/")) renderColor(h.split("/")[1]);
-  }
-
-  if(!location.hash) location.hash="#home";
-  window.addEventListener("hashchange",router);
-  router();
-
+renderHome();
 </script>
+
 </body>
 </html>
+
