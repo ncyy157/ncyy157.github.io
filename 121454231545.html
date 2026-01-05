@@ -560,7 +560,7 @@ const colors = clusters
 
     const mood = detectMood(colors);
 
-    palettes.push({
+    palettes.unshift({
       id:"img_"+Date.now(),
       name:`Image Palette · ${mood}`,
       colors
