@@ -93,6 +93,32 @@ input[type=file]{
   transform:translateY(0);
 }
 
+  .back-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin:20px 0;
+  padding:10px 18px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#111,#444);
+  color:#fff;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  border:none;
+  transition:.3s;
+}
+
+.back-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 20px rgba(0,0,0,.25);
+}
+
+.back-btn:active{
+  transform:translateY(0);
+}
+
+
 </style>
 </head>
 <body>
@@ -103,6 +129,17 @@ input[type=file]{
   上傳圖片生成色票
   <input type="file" accept="image/*" onchange="handleUpload(event)" hidden>
 </label>
+
+  <div style="margin-top:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+  <img id="preview" style="height:48px;border-radius:8px;display:none;">
+  
+  <label style="font-size:13px;">
+    色票數量：
+    <input type="range" id="kRange" min="3" max="8" value="5">
+    <span id="kVal">5</span>
+  </label>
+</div>
+
 
 </header>
 
@@ -141,7 +178,10 @@ function goPalette(id){
         ${c}
       </div>
     `).join("")}
-    <button onclick="renderHome()">← Back</button>
+   <button class="back-btn" onclick="renderHome()">
+  ← Back to Palettes
+</button>
+
   `;
 }
 
@@ -183,64 +223,160 @@ function renderColor(hex){
       </div>
     `).join("")}
 
-    <button onclick="renderHome()">← Back</button>
+<button class="back-btn" onclick="renderHome()">
+  ← Back to Palettes
+</button>
+
   `;
 }
 
+  function detectMood(hexes){
+  let warm=0,cool=0,muted=0;
+
+  hexes.forEach(hex=>{
+    const {r,g,b}=hexToRgb(hex);
+    const {h,s,l}=rgbToHsl(r,g,b);
+
+    if(s < 0.25) muted++;
+    else if(h < 60 || h > 300) warm++;
+    else if(h > 180 && h < 300) cool++;
+  });
+
+  if(muted > Math.max(warm,cool)) return "Muted";
+  return warm >= cool ? "Warm" : "Cool";
+}
+
+
+/* ===== K-Means Color Utils ===== */
+
+// RGB 距離
+function colorDistance(a, b){
+  return Math.sqrt(
+    (a.r - b.r) ** 2 +
+    (a.g - b.g) ** 2 +
+    (a.b - b.b) ** 2
+  );
+}
+
+// 隨機挑 k 個初始中心
+function initCentroids(pixels, k){
+  const shuffled = pixels.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, k);
+}
+
+// K-Means 主體
+function kMeans(pixels, k = 5, iterations = 8){
+  let centroids = initCentroids(pixels, k);
+
+  for(let i = 0; i < iterations; i++){
+    const groups = Array.from({length:k}, () => []);
+
+    pixels.forEach(p => {
+      let min = Infinity, idx = 0;
+      centroids.forEach((c, i) => {
+        const d = colorDistance(p, c);
+        if(d < min){
+          min = d;
+          idx = i;
+        }
+      });
+      groups[idx].push(p);
+    });
+
+    centroids = groups.map(group => {
+      if(group.length === 0) return centroids[Math.floor(Math.random()*k)];
+      const avg = group.reduce((a,b)=>({
+        r:a.r+b.r, g:a.g+b.g, b:a.b+b.b
+      }),{r:0,g:0,b:0});
+      return {
+        r:Math.round(avg.r/group.length),
+        g:Math.round(avg.g/group.length),
+        b:Math.round(avg.b/group.length)
+      };
+    });
+  }
+
+  return centroids;
+}
+
+// 過濾太接近的顏色
+function dedupeColors(colors, threshold = 40){
+  const result = [];
+  colors.forEach(c=>{
+    if(!result.some(r => colorDistance(c,r) < threshold)){
+      result.push(c);
+    }
+  });
+  return result;
+}
+
+  
 /* ===== 圖片生成色票 ===== */
 function handleUpload(event){
   const file = event.target.files[0];
+  if(!file) return;
+
   const img = new Image();
+  const preview = document.getElementById("preview");
+
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
 
   img.onload = () => {
-    const colors = extractColors(img,5); // 取 5 個主要色
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const size = 120;
+    canvas.width = size;
+    canvas.height = size;
+    ctx.drawImage(img,0,0,size,size);
+
+    const data = ctx.getImageData(0,0,size,size).data;
+    const pixels = [];
+
+    for(let i=0;i<data.length;i+=4){
+      const r=data[i],g=data[i+1],b=data[i+2],a=data[i+3];
+      if(a<200) continue;
+      const v=(r+g+b)/3;
+      if(v<20||v>235) continue;
+      pixels.push({r,g,b});
+    }
+
+    const k = Number(document.getElementById("kRange").value);
+
+    let clusters = kMeans(pixels, k+1);
+    clusters = dedupeColors(clusters);
+
+    clusters.sort((a,b)=>
+      (a.r+a.g+a.b)-(b.r+b.g+b.b)
+    );
+
+    
+const colors = clusters
+  .sort((a,b)=>{
+    const ha = rgbToHsl(a.r,a.g,a.b).h;
+    const hb = rgbToHsl(b.r,b.g,b.b).h;
+    return ha - hb;
+  })
+  .slice(0,k)
+  .map(c=>rgbToHex(c.r,c.g,c.b));
+
+
+    const mood = detectMood(colors);
+
     palettes.push({
       id:"img_"+Date.now(),
-      name:"Image Palette",
-      colors: colors
+      name:`Image Palette · ${mood}`,
+      colors
     });
+
     renderHome();
   };
 
-  img.src = URL.createObjectURL(file);
+  img.src = preview.src;
 }
 
-/* ===== 圖片主色提取 ===== */
-function extractColors(img, count=5){
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = 100;
-  canvas.height = 100;
-  ctx.drawImage(img,0,0,100,100);
-  const data = ctx.getImageData(0,0,100,100).data;
 
-  // 收集像素
-  let pixels = [];
-  for(let i=0;i<data.length;i+=4){
-    const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-    if(a>128) pixels.push({r,g,b});
-  }
-
-  if(pixels.length===0) return ["#cccccc"]; // 防止空圖
-
-  // 亮度排序
-  pixels.sort((a,b)=>0.2126*a.r+0.7152*a.g+0.0722*a.b - (0.2126*b.r+0.7152*b.g+0.0722*b.b));
-
-  const seg = Math.floor(pixels.length / count);
-  let colors = [];
-  for(let i=0;i<count;i++){
-    const chunk = pixels.slice(i*seg,(i+1)*seg);
-    colors.push(avgColor(chunk));
-  }
-
-  return colors;
-}
-
-function avgColor(arr){
-  const len = arr.length;
-  const sum = arr.reduce((acc,p)=>({r:acc.r+p.r,g:acc.g+p.g,b:acc.b+p.b}),{r:0,g:0,b:0});
-  return rgbToHex(Math.round(sum.r/len), Math.round(sum.g/len), Math.round(sum.b/len));
-}
 
 /* ===== Color Utils ===== */
 function hexToRgb(hex){
@@ -284,6 +420,14 @@ function hslToHex(h,s,l){
 }
 
 renderHome();
+
+  const kRange = document.getElementById("kRange");
+const kVal = document.getElementById("kVal");
+
+kRange.oninput = () => {
+  kVal.textContent = kRange.value;
+};
+
 </script>
 
 </body>
